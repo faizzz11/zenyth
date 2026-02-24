@@ -98,41 +98,33 @@ export default function LandingPage() {
               <div className="w-full max-w-[937px] lg:w-[937px] flex flex-col justify-center items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6">
                 <div className="self-stretch rounded-[3px] flex flex-col justify-center items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
                   <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[24px] xs:text-[28px] sm:text-[36px] md:text-[52px] lg:text-[80px] font-normal leading-[1.1] sm:leading-[1.15] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
-                    Complete Hospital Management
+                    AI-Powered Content
                     <br />
-                    Platform by Zenyth
+                    Creation Platform
                   </div>
                   <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] sm:text-lg md:text-xl leading-[1.4] sm:leading-[1.45] md:leading-[1.5] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 lg:text-lg font-medium text-sm">
-                    Empowering hospitals, doctors, and patients
+                    Generate videos, thumbnails, scripts & memes.
                     <br className="hidden sm:block" />
-                    with intelligent healthcare management solutions.
+                    Post everywhere in one click. Ride every trend.
                   </div>
                 </div>
               </div>
 
               <div className="w-full max-w-[900px] lg:w-[900px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
                 <div className="backdrop-blur-[8.25px] flex flex-row justify-center items-center gap-3 sm:gap-4 w-full">
-                  <Link href="/auth/signup?role=hospital" className="flex-1 max-w-[280px]">
+                  <Link href="/auth/signup" className="flex-1 max-w-[280px]">
                     <div className="h-14 sm:h-16 px-6 sm:px-8 py-3 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity w-full">
                       <div className="w-full h-full absolute left-0 top-0 bg-gradient-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
                       <div className="flex flex-col justify-center text-white text-base sm:text-lg font-semibold leading-6 font-sans tracking-tight text-center">
-                        Manage Hospital
+                        Get Started Free
                       </div>
                     </div>
                   </Link>
-                  <Link href="/auth/signup?role=doctor" className="flex-1 max-w-[280px]">
+                  <Link href="#features" className="flex-1 max-w-[280px]">
                     <div className="h-14 sm:h-16 px-6 sm:px-8 py-3 relative bg-black/90 shadow-[0px_0px_0px_3px_rgba(255,255,255,0.08)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:bg-black/80 transition-colors w-full">
                       <div className="w-full h-full absolute left-0 top-0 bg-gradient-to-b from-[rgba(255,255,255,0.08)] to-[rgba(0,0,0,0.30)] mix-blend-multiply"></div>
                       <div className="flex flex-col justify-center text-white text-base sm:text-lg font-semibold leading-6 font-sans tracking-tight text-center">
-                        Are you a doctor?
-                      </div>
-                    </div>
-                  </Link>
-                  <Link href="/auth/signup?role=patient" className="flex-1 max-w-[280px]">
-                    <div className="h-14 sm:h-16 px-6 sm:px-8 py-3 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity w-full">
-                      <div className="w-full h-full absolute left-0 top-0 bg-gradient-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
-                      <div className="flex flex-col justify-center text-white text-base sm:text-lg font-semibold leading-6 font-sans tracking-tight text-center">
-                        Are you a patient?
+                        Watch Demo
                       </div>
                     </div>
                   </Link>
@@ -155,12 +147,11 @@ export default function LandingPage() {
                   <div className="self-stretch flex-1 flex justify-start items-start">
                     <div className="w-full h-full flex items-center justify-center">
                       <div className="relative w-full h-full overflow-hidden">
-                        <div className="absolute inset-0">
-                          <img
-                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dsadsadsa.jpg-xTHS4hGwCWp2H5bTj8np6DXZUyrxX7.jpeg"
-                            alt="Hospital Management Dashboard"
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] flex items-center justify-center">
+                          <div className="text-center text-white/60 text-lg font-sans">
+                            <svg className="mx-auto mb-4 w-16 h-16 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            AI Content Dashboard Preview
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -182,22 +173,22 @@ export default function LandingPage() {
 
                 <div className="flex-1 px-0 sm:px-2 md:px-0 flex flex-col md:flex-row justify-center items-stretch gap-0">
                   <FeatureCard
-                    title="Hospital Management"
-                    description="Complete hospital operations management with bed tracking, admissions, inventory, and OPD queue management."
+                    title="AI Content Generation"
+                    description="Generate videos, scripts, thumbnails, memes, and images with AI. Create a month of content in minutes."
                     isActive={activeCard === 0}
                     progress={activeCard === 0 ? progress : 0}
                     onClick={() => handleCardClick(0)}
                   />
                   <FeatureCard
-                    title="Doctor Side"
-                    description="Comprehensive doctor portal with patient management, AI-powered diagnosis, prescriptions, and medical records."
+                    title="Multi-Platform Publishing"
+                    description="Post to YouTube, Instagram, X, LinkedIn & more in one click. Auto-optimize content for each platform."
                     isActive={activeCard === 1}
                     progress={activeCard === 1 ? progress : 0}
                     onClick={() => handleCardClick(1)}
                   />
                   <FeatureCard
-                    title="Patient Side"
-                    description="Patient-friendly portal for appointment booking, health records access, symptom checking, and medical support."
+                    title="Trend Detection & Analytics"
+                    description="Detect trending topics before they peak. Get real-time analytics, competitor insights, and content ideas."
                     isActive={activeCard === 2}
                     progress={activeCard === 2 ? progress : 0}
                     onClick={() => handleCardClick(2)}
@@ -236,15 +227,15 @@ export default function LandingPage() {
                           <rect x="9.5" y="5" width="1" height="1" fill="#37322F" />
                         </svg>
                       }
-                      text="Healthcare Excellence"
+                      text="Creator's Choice"
                     />
                     <div className="w-full max-w-[472.55px] text-center flex justify-center flex-col text-[#49423D] text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-                      Trusted by healthcare professionals
+                      Trusted by 10,000+ creators worldwide
                     </div>
                     <div className="self-stretch text-center text-[#605A57] text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
-                      Zenyth provides comprehensive solutions for hospital management,
+                      Zenyth empowers creators with AI-driven content generation,
                       <br className="hidden sm:block" />
-                      doctor workflows, and patient care in one integrated platform.
+                      multi-platform publishing, and real-time trend detection.
                     </div>
                   </div>
                 </div>
@@ -265,12 +256,12 @@ export default function LandingPage() {
                       text="Features"
                     />
                     <div className="w-full max-w-[598.06px] lg:w-[598.06px] text-center flex justify-center flex-col text-[#49423D] text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-                      Three sides, one platform
+                      Everything creators need, one platform
                     </div>
                     <div className="self-stretch text-center text-[#605A57] text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
-                      Hospital management, doctor portal, and patient services
+                      AI content generation, smart publishing, and trend analytics
                       <br />
-                      seamlessly integrated for efficient healthcare delivery.
+                      seamlessly integrated for maximum creator growth.
                     </div>
                   </div>
                 </div>
@@ -291,10 +282,10 @@ export default function LandingPage() {
                     <div className="border-b border-r-0 md:border-r border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Hospital Management
+                          AI Video & Script Generator
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Complete control over hospital operations, bed management, admissions, and inventory tracking.
+                          Generate full video scripts, AI voiceovers, and edited videos. Create a month of content ideas with one click.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex items-center justify-center overflow-hidden">
@@ -310,10 +301,10 @@ export default function LandingPage() {
                     <div className="border-b border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] font-semibold leading-tight font-sans text-lg sm:text-xl">
-                          Doctor Side
+                          Smart Thumbnail A/B Testing
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Comprehensive doctor portal with patient management, AI diagnosis, prescriptions, and medical records.
+                          Auto-generate 5 thumbnail variants, run A/B tests, and keep the highest CTR one. Powered by AI models.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden text-right items-center justify-center">
@@ -329,10 +320,10 @@ export default function LandingPage() {
                     <div className="border-r-0 md:border-r border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6 bg-transparent">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Patient Side
+                          Cross-Platform Publisher
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Patient-friendly portal for appointments, health records, symptom checking, and medical support.
+                          Post to YouTube, Instagram, X, LinkedIn & more simultaneously. Auto-rewrite content for each platform's tone.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden justify-center items-center relative bg-transparent">
@@ -346,10 +337,10 @@ export default function LandingPage() {
                     <div className="p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Real-time Analytics
+                          Trend Spike Detector
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Track hospital performance, patient metrics, and operational data with comprehensive analytics dashboard.
+                          Detect early trend spikes before they peak. Get notified about viral topics across every platform in real-time.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden items-center justify-center relative">

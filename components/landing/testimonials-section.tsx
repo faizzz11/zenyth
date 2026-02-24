@@ -22,25 +22,25 @@ export default function TestimonialsSection() {
   const testimonials = [
     {
       quote:
-        "Zenyth has transformed our hospital operations. Bed management, admissions, and inventory tracking are now seamless. Our efficiency has improved dramatically!",
-      name: "Dr. Priya Sharma",
-      company: "Hospital Administrator, City General Hospital",
+        "Zenyth completely changed my content game. I generate a full month of video scripts, thumbnails, and memes in under an hour. My engagement tripled in just 3 weeks!",
+      name: "Alex Rivera",
+      company: "YouTube Creator, 500K+ Subscribers",
       image:
         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%2011%2C%202025%2C%2011_35_19%20AM-z4zSRLsbOQDp7MJS1t8EXmGNB6Al9Z.png",
     },
     {
       quote:
-        "The doctor portal is exceptional. AI-powered diagnosis assistance and patient management tools have made my practice more efficient. Patient care has never been better.",
-      name: "Dr. Rajesh Kumar",
-      company: "Senior Physician, Apollo Medical Center",
+        "The multi-platform publishing is a lifesaver. One click and my content is optimized and posted across YouTube, Instagram, X, and LinkedIn. I save 20+ hours every week.",
+      name: "Priya Mehta",
+      company: "Social Media Strategist, Brand Creator",
       image:
         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%2011%2C%202025%2C%2010_54_18%20AM-nbiecp92QNdTudmCrHr97uekrIPzCP.png",
     },
     {
       quote:
-        "As a patient, Zenyth makes healthcare so accessible. Booking appointments, accessing my medical records, and getting support is incredibly easy. It's revolutionized my healthcare experience.",
-      name: "Anita Patel",
-      company: "Patient, Regular User",
+        "The trend spike detector is insane. I caught a viral topic 12 hours before everyone else and got 2M views on a single reel. Zenyth is the unfair advantage every creator needs.",
+      name: "Jordan Lee",
+      company: "TikTok & Instagram Creator, 1M+ Followers",
       image:
         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%2011%2C%202025%2C%2011_01_05%20AM-TBOe92trRxKn4G5So1m9D2h7LRH4PG.png",
     },

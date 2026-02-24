@@ -11,32 +11,32 @@ const faqData: FAQItem[] = [
   {
     question: "What is Zenyth and who is it for?",
     answer:
-      "Zenyth is a comprehensive hospital management platform designed for healthcare facilities. It's perfect for hospitals, clinics, doctors, and patients looking to streamline healthcare operations, manage patient care, and improve overall efficiency.",
+      "Zenyth is an AI-powered content creation and social media management platform for creators, influencers, and brands. It helps you generate videos, thumbnails, scripts, memes, and more — then publish across all platforms in one click.",
   },
   {
-    question: "How does Zenyth help with hospital management?",
+    question: "What kind of content can Zenyth generate?",
     answer:
-      "Zenyth provides complete hospital operations management including bed tracking, patient admissions and discharges, inventory management, OPD queue management, and real-time analytics. Everything you need to run a hospital efficiently is in one platform.",
+      "Zenyth can generate video scripts, AI voiceovers, edited videos, smart thumbnails with A/B testing, memes, images, titles, descriptions, tags, and even month-long content calendars. Our AI agents handle everything from ideation to final output.",
   },
   {
-    question: "What features are available for doctors?",
+    question: "How does multi-platform publishing work?",
     answer:
-      "The doctor portal includes patient management, AI-powered diagnosis assistance, electronic prescriptions, medical records management, appointment scheduling, and comprehensive patient history tracking. All tools doctors need for efficient patient care.",
+      "With one click, Zenyth publishes your content across YouTube, Instagram, X (Twitter), LinkedIn, TikTok, and more. It auto-rewrites and optimizes your content for each platform's unique format, tone, and requirements.",
   },
   {
-    question: "What can patients do with Zenyth?",
+    question: "What is the Smart Thumbnail A/B Testing feature?",
     answer:
-      "Patients can book appointments, view their medical records and history, access prescriptions, use AI-powered symptom checking, track their health metrics, and communicate with healthcare providers. Everything patients need for their healthcare journey.",
+      "Zenyth's AI generates 5 thumbnail variants for your video, automatically runs A/B tests across your audience, and keeps the highest-performing thumbnail based on click-through rate (CTR). No manual testing needed.",
   },
   {
-    question: "Is patient data secure with Zenyth?",
+    question: "How does the Trend Spike Detector work?",
     answer:
-      "Absolutely. We use healthcare-grade security measures including HIPAA compliance, end-to-end encryption, regular security audits, and secure data storage. Patient privacy and data security are our top priorities.",
+      "Unlike tools that show what's already trending, Zenyth detects early trend spikes before they peak. You get real-time notifications so you can create content on viral topics while they're still rising — giving you maximum reach.",
   },
   {
     question: "How do I get started with Zenyth?",
     answer:
-      "Getting started is simple! Sign up for free, choose your role (hospital, doctor, or patient), complete your profile setup, and our team will help you get started. Hospital administrators can set up their facility, doctors can start managing patients, and patients can begin booking appointments immediately.",
+      "Getting started is simple! Sign up for free, connect your social media accounts, and start creating. Use our AI agents to generate content, schedule posts, and track performance — all from one dashboard.",
   },
 ]
 
@@ -73,7 +73,7 @@ export default function FAQSection() {
           <div className="w-full text-[#605A57] text-base font-normal leading-7 font-sans">
             Everything you need to know about Zenyth
             <br className="hidden md:block" />
-            and how it transforms healthcare management.
+            and how it supercharges your content creation.
           </div>
         </div>
 
@@ -95,17 +95,15 @@ export default function FAQSection() {
                     </div>
                     <div className="flex justify-center items-center">
                       <ChevronDownIcon
-                        className={`w-6 h-6 text-[rgba(73,66,61,0.60)] transition-transform duration-300 ease-in-out ${
-                          isOpen ? "rotate-180" : "rotate-0"
-                        }`}
+                        className={`w-6 h-6 text-[rgba(73,66,61,0.60)] transition-transform duration-300 ease-in-out ${isOpen ? "rotate-180" : "rotate-0"
+                          }`}
                       />
                     </div>
                   </button>
 
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                    }`}
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                      }`}
                   >
                     <div className="px-5 pb-[18px] text-[#605A57] text-sm font-normal leading-6 font-sans">
                       {item.answer}

@@ -9,7 +9,7 @@ export default function FooterSection() {
             <div className="text-center text-[#49423D] text-xl font-semibold leading-4 font-sans">Zenyth</div>
           </div>
           <div className="text-[rgba(73,66,61,0.90)] text-sm font-medium leading-[18px] font-sans">
-            Complete hospital management platform
+            AI-powered content creation platform
           </div>
 
           {/* Social Media Icons */}
@@ -63,13 +63,13 @@ export default function FooterSection() {
             </div>
             <div className="flex flex-col justify-end items-start gap-2">
               <div className="text-[#49423D] text-sm font-normal leading-5 font-sans cursor-pointer hover:text-[#37322F] transition-colors">
-                Hospital Management
+                AI Video Generator
               </div>
               <div className="text-[#49423D] text-sm font-normal leading-5 font-sans cursor-pointer hover:text-[#37322F] transition-colors">
-                Doctor Portal
+                Meme Generator
               </div>
               <div className="text-[#49423D] text-sm font-normal leading-5 font-sans cursor-pointer hover:text-[#37322F] transition-colors">
-                Patient Services
+                Thumbnail A/B Testing
               </div>
               <div className="text-[#49423D] text-sm font-normal leading-5 font-sans cursor-pointer hover:text-[#37322F] transition-colors">
                 Pricing

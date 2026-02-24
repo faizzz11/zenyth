@@ -21,19 +21,19 @@ export default function DocumentationSection() {
 
   const cards = [
     {
-      id: "hospital",
-      title: "Hospital Operations",
-      description: "Manage beds, admissions, inventory, and OPD queues\nall from one centralized dashboard.",
+      id: "memes",
+      title: "AI Meme Generator",
+      description: "Generate viral memes instantly with AI.\nCustomize templates, add trending captions, and go viral.",
     },
     {
-      id: "doctor",
-      title: "Doctor Workflows",
-      description: "Streamline patient care with AI-powered diagnosis,\nprescriptions, and medical records management.",
+      id: "music",
+      title: "Music Content Exchange",
+      description: "Remix and generate music content with AI.\nBlend modern beats with classic vocals and styles.",
     },
     {
-      id: "patient",
-      title: "Patient Services",
-      description: "Enable patients to book appointments, access records,\nand receive medical support seamlessly.",
+      id: "creator",
+      title: "AI Creator Studio",
+      description: "AI cartoon voice/face with funny explanations.\nMake complex topics entertaining and viral.",
     },
   ]
 
@@ -60,15 +60,15 @@ export default function DocumentationSection() {
             icon={
               <div className="w-[10.50px] h-[10.50px] outline outline-[1.17px] outline-[#37322F] outline-offset-[-0.58px] rounded-full"></div>
             }
-            text="Platform Features"
+            text="AI Agents"
           />
           <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-            Complete healthcare management solution
+            Meet your AI creative agents
           </div>
           <div className="self-stretch text-center text-[#605A57] text-base font-normal leading-7 font-sans">
-            Hospital management, doctor workflows, and patient services
+            Meme generation, music remixing, and AI creator studio
             <br />
-            integrated in one powerful Zenyth platform.
+            — your entire creative team, powered by AI.
           </div>
         </div>
       </div>
@@ -85,11 +85,10 @@ export default function DocumentationSection() {
                 <div
                   key={card.id}
                   onClick={() => handleCardClick(index)}
-                  className={`w-full overflow-hidden flex flex-col justify-start items-start transition-all duration-300 cursor-pointer ${
-                    isActive
+                  className={`w-full overflow-hidden flex flex-col justify-start items-start transition-all duration-300 cursor-pointer ${isActive
                       ? "bg-white shadow-[0px_0px_0px_0.75px_#E0DEDB_inset]"
                       : "border border-[rgba(2,6,23,0.08)]"
-                  }`}
+                    }`}
                 >
                   <div
                     className={`w-full h-0.5 bg-[rgba(50,45,43,0.08)] overflow-hidden ${isActive ? "opacity-100" : "opacity-0"}`}
@@ -121,16 +120,16 @@ export default function DocumentationSection() {
                   className="absolute inset-0 transition-all duration-500 ease-in-out flex items-center justify-center opacity-100 scale-100 bg-gradient-to-br from-blue-50 to-blue-100"
                 >
                   <svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#0066CC" strokeWidth="2"/>
-                    <rect x="60" y="60" width="120" height="40" rx="4" fill="#0066CC" opacity="0.2"/>
-                    <rect x="60" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1"/>
-                    <rect x="150" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1"/>
-                    <rect x="240" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1"/>
-                    <rect x="60" y="150" width="260" height="100" rx="4" fill="#0066CC" opacity="0.1"/>
-                    <circle cx="80" cy="80" r="8" fill="#0066CC"/>
-                    <rect x="100" y="75" width="60" height="10" rx="2" fill="#0066CC" opacity="0.3"/>
-                    <rect x="200" y="60" width="100" height="20" rx="4" fill="#0066CC" opacity="0.2"/>
-                    <rect x="310" y="60" width="40" height="20" rx="4" fill="#0066CC"/>
+                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#0066CC" strokeWidth="2" />
+                    <rect x="60" y="60" width="120" height="40" rx="4" fill="#0066CC" opacity="0.2" />
+                    <rect x="60" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1" />
+                    <rect x="150" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1" />
+                    <rect x="240" y="110" width="80" height="30" rx="4" fill="#0066CC" opacity="0.1" />
+                    <rect x="60" y="150" width="260" height="100" rx="4" fill="#0066CC" opacity="0.1" />
+                    <circle cx="80" cy="80" r="8" fill="#0066CC" />
+                    <rect x="100" y="75" width="60" height="10" rx="2" fill="#0066CC" opacity="0.3" />
+                    <rect x="200" y="60" width="100" height="20" rx="4" fill="#0066CC" opacity="0.2" />
+                    <rect x="310" y="60" width="40" height="20" rx="4" fill="#0066CC" />
                   </svg>
                 </div>
               )}
@@ -140,16 +139,16 @@ export default function DocumentationSection() {
                   className="absolute inset-0 transition-all duration-500 ease-in-out flex items-center justify-center opacity-100 scale-100 bg-gradient-to-br from-purple-50 to-purple-100"
                 >
                   <svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#6B46C1" strokeWidth="2"/>
-                    <circle cx="120" cy="120" r="40" fill="#6B46C1" opacity="0.1"/>
-                    <path d="M100 120L110 130L140 100" stroke="#6B46C1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect x="200" y="80" width="120" height="80" rx="4" fill="#6B46C1" opacity="0.1"/>
-                    <rect x="220" y="100" width="80" height="40" rx="4" fill="#6B46C1" opacity="0.2"/>
-                    <path d="M80 200L100 180L120 200L140 180L160 200" stroke="#6B46C1" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                    <rect x="200" y="180" width="120" height="60" rx="4" fill="#6B46C1" opacity="0.1"/>
-                    <rect x="220" y="200" width="80" height="20" rx="2" fill="#6B46C1" opacity="0.3"/>
-                    <circle cx="280" cy="120" r="12" fill="#6B46C1"/>
-                    <path d="M275 120L280 125L285 120" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#6B46C1" strokeWidth="2" />
+                    <circle cx="120" cy="120" r="40" fill="#6B46C1" opacity="0.1" />
+                    <path d="M100 120L110 130L140 100" stroke="#6B46C1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="200" y="80" width="120" height="80" rx="4" fill="#6B46C1" opacity="0.1" />
+                    <rect x="220" y="100" width="80" height="40" rx="4" fill="#6B46C1" opacity="0.2" />
+                    <path d="M80 200L100 180L120 200L140 180L160 200" stroke="#6B46C1" strokeWidth="3" fill="none" strokeLinecap="round" />
+                    <rect x="200" y="180" width="120" height="60" rx="4" fill="#6B46C1" opacity="0.1" />
+                    <rect x="220" y="200" width="80" height="20" rx="2" fill="#6B46C1" opacity="0.3" />
+                    <circle cx="280" cy="120" r="12" fill="#6B46C1" />
+                    <path d="M275 120L280 125L285 120" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               )}
@@ -159,18 +158,18 @@ export default function DocumentationSection() {
                   className="absolute inset-0 transition-all duration-500 ease-in-out flex items-center justify-center opacity-100 scale-100 bg-gradient-to-br from-green-50 to-green-100"
                 >
                   <svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#00A651" strokeWidth="2"/>
-                    <rect x="60" y="60" width="100" height="140" rx="4" fill="#00A651" opacity="0.1"/>
-                    <circle cx="110" cy="100" r="20" fill="#00A651" opacity="0.2"/>
-                    <rect x="80" y="130" width="60" height="60" rx="4" fill="#00A651" opacity="0.1"/>
-                    <rect x="180" y="60" width="160" height="40" rx="4" fill="#00A651" opacity="0.1"/>
-                    <rect x="200" y="70" width="120" height="20" rx="2" fill="#00A651" opacity="0.3"/>
-                    <rect x="180" y="120" width="80" height="30" rx="4" fill="#00A651" opacity="0.2"/>
-                    <rect x="270" y="120" width="70" height="30" rx="4" fill="#00A651" opacity="0.2"/>
-                    <rect x="180" y="170" width="160" height="30" rx="4" fill="#00A651" opacity="0.1"/>
-                    <path d="M200 200L220 180L240 200L260 180L280 200" stroke="#00A651" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                    <circle cx="320" cy="100" r="15" fill="#00A651"/>
-                    <path d="M315 100L320 105L325 100" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="40" y="40" width="320" height="220" rx="8" fill="white" stroke="#00A651" strokeWidth="2" />
+                    <rect x="60" y="60" width="100" height="140" rx="4" fill="#00A651" opacity="0.1" />
+                    <circle cx="110" cy="100" r="20" fill="#00A651" opacity="0.2" />
+                    <rect x="80" y="130" width="60" height="60" rx="4" fill="#00A651" opacity="0.1" />
+                    <rect x="180" y="60" width="160" height="40" rx="4" fill="#00A651" opacity="0.1" />
+                    <rect x="200" y="70" width="120" height="20" rx="2" fill="#00A651" opacity="0.3" />
+                    <rect x="180" y="120" width="80" height="30" rx="4" fill="#00A651" opacity="0.2" />
+                    <rect x="270" y="120" width="70" height="30" rx="4" fill="#00A651" opacity="0.2" />
+                    <rect x="180" y="170" width="160" height="30" rx="4" fill="#00A651" opacity="0.1" />
+                    <path d="M200 200L220 180L240 200L260 180L280 200" stroke="#00A651" strokeWidth="3" fill="none" strokeLinecap="round" />
+                    <circle cx="320" cy="100" r="15" fill="#00A651" />
+                    <path d="M315 100L320 105L325 100" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               )}

@@ -24,12 +24,12 @@ export default function CTASection() {
         <div className="w-full max-w-[586px] px-6 py-5 md:py-8 overflow-hidden rounded-lg flex flex-col justify-start items-center gap-6 relative z-20">
           <div className="self-stretch flex flex-col justify-start items-start gap-3">
             <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[56px] font-sans tracking-tight">
-              Ready to transform your healthcare operations?
+              Ready to supercharge your content creation?
             </div>
             <div className="self-stretch text-center text-[#605A57] text-base leading-7 font-sans font-medium">
-              Join healthcare providers using Zenyth for hospital management,
+              Join 10,000+ creators using Zenyth to generate AI content,
               <br />
-              doctor workflows, and patient care in one integrated platform.
+              publish everywhere, and ride every trend before it peaks.
             </div>
           </div>
           <div className="w-full max-w-[497px] flex flex-col justify-center items-center gap-12">
