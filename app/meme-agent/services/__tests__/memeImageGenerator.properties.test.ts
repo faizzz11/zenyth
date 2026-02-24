@@ -1,91 +1,214 @@
 import { generateMemeImage } from '../memeImageGenerator';
-import * as pollinationsModule from '@/lib/pollinations';
+
+// Mock the Gemini API
+jest.mock('@google/generative-ai');
 
 // Reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();
+  process.env.GEMINI_API_KEY = 'test-api-key';
 });
 
 describe('Property Tests: Meme Image Generator', () => {
   /**
-   * Feature: meme-agent, Property 10: HTTPS URL Validation
+   * Feature: meme-agent, Property 10: Data URL Validation
    * 
-   * For any meme output, the image should be returned as a valid HTTPS URL from Pollinations.ai.
+   * For any meme output, the image should be returned as a valid data URL with base64 encoded image data.
    * 
    * **Validates: Requirements 7.3, 15.3**
    */
-  describe('Property 10: HTTPS URL Validation', () => {
-    it('should return valid HTTPS URLs', async () => {
+  describe('Property 10: Data URL Validation', () => {
+    it('should return valid data URLs starting with data:image/', async () => {
+      const { GoogleGenerativeAI } = require('@google/generative-ai');
       const visualDescription = 'Test visual description';
-      const mockImageUrl = 'https://image.pollinations.ai/prompt/test';
+      const mockBase64Data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       
-      const mockClient = {
-        generateWithRetry: jest.fn().mockResolvedValue(mockImageUrl),
+      const mockGenerateContent = jest.fn().mockResolvedValue({
+        response: {
+          candidates: [{
+            content: {
+              parts: [{
+                inlineData: {
+                  data: mockBase64Data,
+                  mimeType: 'image/png'
+                }
+              }]
+            }
+          }]
+        }
+      });
+      
+      const mockModel = {
+        generateContent: mockGenerateContent
       };
       
-      jest.spyOn(pollinationsModule, 'createPollinationsClient').mockReturnValue(mockClient as any);
+      const mockClient = {
+        getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+      };
+      
+      GoogleGenerativeAI.mockImplementation(() => mockClient);
       
       const result = await generateMemeImage(visualDescription);
       
-      expect(result).toMatch(/^https:\/\//);
+      expect(result).toMatch(/^data:image\//);
+      expect(result).toContain('base64,');
     });
 
-    it('should reject invalid URL formats', async () => {
-      const invalidFormats = ['http://example.com/image.jpg', 'data:image/png;base64,test', 'invalid'];
+    it('should reject invalid data URL formats', async () => {
+      const { GoogleGenerativeAI } = require('@google/generative-ai');
       
-      for (const invalidFormat of invalidFormats) {
-        const mockClient = {
-          generateWithRetry: jest.fn().mockResolvedValue(invalidFormat),
-        };
-        
-        jest.spyOn(pollinationsModule, 'createPollinationsClient').mockReturnValue(mockClient as any);
-        
-        await expect(generateMemeImage('test description')).rejects.toThrow('Invalid image URL format');
-      }
+      const mockGenerateContent = jest.fn().mockResolvedValue({
+        response: {
+          candidates: [{
+            content: {
+              parts: [{
+                inlineData: {
+                  data: 'test',
+                  mimeType: 'text/plain' // Invalid MIME type
+                }
+              }]
+            }
+          }]
+        }
+      });
+      
+      const mockModel = {
+        generateContent: mockGenerateContent
+      };
+      
+      const mockClient = {
+        getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+      };
+      
+      GoogleGenerativeAI.mockImplementation(() => mockClient);
+      
+      await expect(generateMemeImage('test description')).rejects.toThrow('Invalid data URL format');
     });
   });
 
   /**
-   * Feature: meme-agent, Property 11: Image Resolution Requirement
+   * Feature: meme-agent, Property 11: Image Data Validation
    * 
-   * For any generated meme image, the URL should be valid and accessible.
+   * For any generated meme image, the data URL should contain valid base64 encoded image data.
    * 
-   * Note: This property is typically enforced by the Pollinations.ai service itself.
-   * We test that the service accepts the visual description and returns a valid HTTPS URL.
+   * Note: This property validates that the Gemini API returns properly formatted base64 image data.
    * 
    * **Validates: Requirements 7.4**
    */
-  describe('Property 11: Image Resolution Requirement', () => {
-    it('should accept visual description and return valid HTTPS URL', async () => {
+  describe('Property 11: Image Data Validation', () => {
+    it('should return data URL with valid base64 data', async () => {
+      const { GoogleGenerativeAI } = require('@google/generative-ai');
       const visualDescription = 'A funny cat wearing sunglasses';
-      const mockImageUrl = 'https://image.pollinations.ai/prompt/A%20funny%20cat%20wearing%20sunglasses';
+      const mockBase64Data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       
-      const mockClient = {
-        generateWithRetry: jest.fn().mockResolvedValue(mockImageUrl),
+      const mockGenerateContent = jest.fn().mockResolvedValue({
+        response: {
+          candidates: [{
+            content: {
+              parts: [{
+                inlineData: {
+                  data: mockBase64Data,
+                  mimeType: 'image/png'
+                }
+              }]
+            }
+          }]
+        }
+      });
+      
+      const mockModel = {
+        generateContent: mockGenerateContent
       };
       
-      jest.spyOn(pollinationsModule, 'createPollinationsClient').mockReturnValue(mockClient as any);
+      const mockClient = {
+        getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+      };
+      
+      GoogleGenerativeAI.mockImplementation(() => mockClient);
       
       const result = await generateMemeImage(visualDescription);
       
       expect(typeof result).toBe('string');
-      expect(result.startsWith('https://')).toBe(true);
-      expect(mockClient.generateWithRetry).toHaveBeenCalledWith(visualDescription, 3, 30000);
+      expect(result.startsWith('data:image/')).toBe(true);
+      expect(result).toContain('base64,');
+      
+      // Extract and validate base64 data
+      const base64Part = result.split('base64,')[1];
+      expect(base64Part).toBeTruthy();
+      expect(base64Part.length).toBeGreaterThan(0);
     });
 
-    it('should pass visual description to Pollinations client', async () => {
+    it('should pass visual description to Gemini model', async () => {
+      const { GoogleGenerativeAI } = require('@google/generative-ai');
       const visualDescription = 'A funny cat wearing sunglasses';
-      const mockImageUrl = 'https://image.pollinations.ai/prompt/A%20funny%20cat%20wearing%20sunglasses';
+      const mockBase64Data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       
-      const mockClient = {
-        generateWithRetry: jest.fn().mockResolvedValue(mockImageUrl),
+      const mockGenerateContent = jest.fn().mockResolvedValue({
+        response: {
+          candidates: [{
+            content: {
+              parts: [{
+                inlineData: {
+                  data: mockBase64Data,
+                  mimeType: 'image/png'
+                }
+              }]
+            }
+          }]
+        }
+      });
+      
+      const mockModel = {
+        generateContent: mockGenerateContent
       };
       
-      jest.spyOn(pollinationsModule, 'createPollinationsClient').mockReturnValue(mockClient as any);
+      const mockClient = {
+        getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+      };
+      
+      GoogleGenerativeAI.mockImplementation(() => mockClient);
       
       await generateMemeImage(visualDescription);
       
-      expect(mockClient.generateWithRetry).toHaveBeenCalledWith(visualDescription, 3, 30000);
+      expect(mockGenerateContent).toHaveBeenCalledWith(visualDescription);
+    });
+
+    it('should handle retry logic with exponential backoff', async () => {
+      const { GoogleGenerativeAI } = require('@google/generative-ai');
+      const mockBase64Data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      
+      const mockGenerateContent = jest.fn()
+        .mockRejectedValueOnce(new Error('First attempt failed'))
+        .mockRejectedValueOnce(new Error('Second attempt failed'))
+        .mockResolvedValueOnce({
+          response: {
+            candidates: [{
+              content: {
+                parts: [{
+                  inlineData: {
+                    data: mockBase64Data,
+                    mimeType: 'image/png'
+                  }
+                }]
+              }
+            }]
+          }
+        });
+      
+      const mockModel = {
+        generateContent: mockGenerateContent
+      };
+      
+      const mockClient = {
+        getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+      };
+      
+      GoogleGenerativeAI.mockImplementation(() => mockClient);
+      
+      const result = await generateMemeImage('test description');
+      
+      expect(mockGenerateContent).toHaveBeenCalledTimes(3);
+      expect(result).toMatch(/^data:image\//);
     });
   });
 });

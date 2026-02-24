@@ -1,25 +1,30 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { safeError } from './securityUtils';
 
 export class GeminiClient {
-  private client: GoogleGenerativeAI;
-  private model: string = 'gemini-2.0-flash-exp';
+  private client: GoogleGenAI;
+  private model: string = 'gemini-3-flash-preview';
 
   constructor(apiKey: string) {
     if (!apiKey) {
       throw new Error('Gemini API key is required');
     }
-    this.client = new GoogleGenerativeAI(apiKey);
+    this.client = new GoogleGenAI({ apiKey });
   }
 
   async generateText(prompt: string, timeout: number = 10000): Promise<string> {
-    const model = this.client.getGenerativeModel({ model: this.model });
-    
     return Promise.race([
       (async () => {
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        return response.text();
+        const response = await this.client.models.generateContent({
+          model: this.model,
+          contents: prompt,
+        });
+        
+        if (!response.candidates?.[0]?.content?.parts?.[0]?.text) {
+          throw new Error('No text generated from Gemini API');
+        }
+        
+        return response.candidates[0].content.parts[0].text;
       })(),
       new Promise<string>((_, reject) => 
         setTimeout(() => reject(new Error('Request timeout')), timeout)

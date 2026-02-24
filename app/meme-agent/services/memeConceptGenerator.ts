@@ -10,19 +10,41 @@ export async function generateMemeConcept(
   const prompt = `Generate a meme concept for the topic: "${topic}"
 Style: ${style}
 
-Return a JSON object with:
-- caption: A witty caption (max 100 characters)
-- punchline: A humorous punchline (max 100 characters)
-- visualDescription: A detailed description for image generation (2-3 sentences)
+You must return ONLY a valid JSON object with these exact fields:
+{
+  "caption": "A witty caption (max 100 characters)",
+  "punchline": "A humorous punchline (max 100 characters)",
+  "visualDescription": "A detailed description for image generation (2-3 sentences)"
+}
 
-The meme should be appropriate for social media and match the ${style} aesthetic.
+Requirements:
+- The meme should be appropriate for social media
+- Match the ${style} aesthetic
+- Use double quotes for all JSON strings
+- Return ONLY the JSON object, no markdown formatting, no additional text
 
-Return ONLY the JSON object, no additional text.`;
+Example format:
+{"caption": "When you...", "punchline": "But then...", "visualDescription": "An image showing..."}`;
+
 
   const response = await client.generateWithRetry(prompt, 3, 10000);
   
+  // Clean the response - remove markdown code blocks if present
+  let cleanedResponse = response.trim();
+  if (cleanedResponse.startsWith('```json')) {
+    cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+  } else if (cleanedResponse.startsWith('```')) {
+    cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+  }
+  
   // Parse the JSON response
-  const parsed = JSON.parse(response);
+  let parsed;
+  try {
+    parsed = JSON.parse(cleanedResponse);
+  } catch (error) {
+    console.error('Failed to parse JSON response:', cleanedResponse);
+    throw new Error(`Invalid JSON response from Gemini: ${(error as Error).message}`);
+  }
   
   // Validate constraints
   if (parsed.caption.length > 100) {

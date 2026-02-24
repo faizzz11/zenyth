@@ -1,26 +1,66 @@
-import { createPollinationsClient } from '@/lib/pollinations';
+import { GoogleGenAI } from '@google/genai';
+import { safeError } from '@/lib/securityUtils';
 
 export async function generateMemeImage(
   visualDescription: string
 ): Promise<string> {
-  const client = createPollinationsClient();
-  
-  const imageUrl = await client.generateWithRetry(visualDescription, 3, 30000);
-  
-  // Validate HTTPS URL format
-  if (!imageUrl.startsWith('https://')) {
-    throw new Error('Invalid image URL format');
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY environment variable is not set');
   }
   
-  // Validate URL structure
-  try {
-    new URL(imageUrl);
-  } catch {
-    throw new Error('Invalid image URL');
+  const ai = new GoogleGenAI({ apiKey });
+
+  let lastError: Error;
+  const maxRetries = 3;
+  const timeout = 30000;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const dataUrl = await Promise.race([
+        (async () => {
+          const response = await ai.models.generateContent({
+            model: 'gemini-3-pro-image-preview',
+            contents: visualDescription,
+          });
+
+          // Extract base64 image data from response
+          if (!response.candidates?.[0]?.content?.parts) {
+            throw new Error('No image data found in response');
+          }
+
+          for (const part of response.candidates[0].content.parts) {
+            if (part.inlineData) {
+              const base64Data = part.inlineData.data;
+              const dataUrl = `data:image/png;base64,${base64Data}`;
+
+              // Validate data URL format
+              if (!dataUrl.startsWith('data:image/')) {
+                throw new Error('Invalid data URL format');
+              }
+
+              return dataUrl;
+            }
+          }
+
+          throw new Error('No image data found in response');
+        })(),
+        new Promise<string>((_, reject) =>
+          setTimeout(() => reject(new Error('Request timeout')), timeout)
+        )
+      ]);
+
+      return dataUrl;
+    } catch (error) {
+      lastError = error as Error;
+      safeError(`Gemini image generation attempt ${attempt + 1} failed:`, error);
+      
+      if (attempt < maxRetries - 1) {
+        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
   }
-  
-  // Note: Image resolution validation would require fetching and parsing the image
-  // This is typically done by the image generation service itself
-  
-  return imageUrl;
+
+  throw lastError!;
 }

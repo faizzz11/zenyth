@@ -53,12 +53,15 @@ export default function MemeAgentPage() {
     }
   }, [mode]);
   
-  const fetchTrendingTopics = async () => {
+  const fetchTrendingTopics = async (forceRefresh = false) => {
     setTrendingTopicsLoading(true);
     setTrendingTopicsError(null);
     
     try {
-      const response = await fetch('/meme-agent/api/trending');
+      const url = forceRefresh 
+        ? '/meme-agent/api/trending?refresh=true' 
+        : '/meme-agent/api/trending';
+      const response = await fetch(url);
       const data = await response.json();
       
       if (data.success) {
@@ -204,7 +207,7 @@ export default function MemeAgentPage() {
                     topics={trendingTopics}
                     selectedTopic={selectedTrendingTopic}
                     onTopicSelect={setSelectedTrendingTopic}
-                    onRefresh={fetchTrendingTopics}
+                    onRefresh={() => fetchTrendingTopics(true)}
                     isLoading={trendingTopicsLoading}
                     error={trendingTopicsError}
                   />
