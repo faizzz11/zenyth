@@ -19,8 +19,8 @@ const instrumentSerif = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  title: "Zenyth - Complete Hospital Management Platform",
-  description: "Comprehensive healthcare platform for hospital management, doctor workflows, and patient services.",
+  title: "Zenyth - AI-Powered Content Creation Platform",
+  description: "Generate videos, thumbnails, scripts, memes & more with AI. Post everywhere in one click. Ride every trend.",
   generator: 'zenyth'
 }
 
