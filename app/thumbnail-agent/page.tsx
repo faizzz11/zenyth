@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 import ThumbnailForm from './components/ThumbnailForm';
 import ThumbnailGrid from './components/ThumbnailGrid';
 import LoadingIndicator from './components/LoadingIndicator';
 import { ThumbnailGenerationResponse, ThumbnailVariation } from './types';
 
 export default function ThumbnailAgentPage() {
+  const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
   const [thumbnails, setThumbnails] = useState<ThumbnailVariation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,6 @@ export default function ThumbnailAgentPage() {
         },
         body: JSON.stringify({
           ...params,
-          userId: 'demo-user',
         }),
       });
 
@@ -98,7 +99,7 @@ export default function ThumbnailAgentPage() {
                   </p>
                 </div>
                 <div className="p-6">
-                  <ThumbnailForm onGenerate={handleGenerate} isGenerating={isGenerating} />
+                  <ThumbnailForm onGenerate={handleGenerate} isGenerating={isGenerating || !user} />
                 </div>
               </div>
             </div>

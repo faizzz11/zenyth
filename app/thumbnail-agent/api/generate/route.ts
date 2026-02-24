@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { generateThumbnails } from '../../services/thumbnailGenerator';
 import { validateFaceImage } from '../../services/faceDetection';
 import { connectToDatabase } from '@/lib/mongodb';
@@ -23,16 +24,31 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const body: ThumbnailGenerationRequest = await request.json();
-    const { faceImage, additionalImages, videoType, detailedInstructions, userId } = body;
-
-    // Validate required fields
-    if (!faceImage || !userId) {
+    // Authenticate user
+    const { userId } = await auth();
+    if (!userId) {
       return NextResponse.json(
         {
           success: false,
           error: {
-            message: 'Missing required fields: faceImage and userId are required',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        } as ThumbnailGenerationResponse,
+        { status: 401 }
+      );
+    }
+
+    const body: ThumbnailGenerationRequest = await request.json();
+    const { faceImage, additionalImages, videoType, detailedInstructions } = body;
+
+    // Validate required fields
+    if (!faceImage) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            message: 'Missing required field: faceImage',
             retryable: false,
           },
         } as ThumbnailGenerationResponse,
@@ -67,6 +83,7 @@ export async function POST(request: NextRequest) {
       videoType,
       instructions: detailedInstructions,
       referenceImages,
+      userId,
     });
 
     const generationTime = Date.now() - startTime;

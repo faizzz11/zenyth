@@ -1,7 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { safeError } from '@/lib/securityUtils';
-import path from 'path';
-import fs from 'fs/promises';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { ThumbnailStyle } from '../types';
 
 interface ThumbnailGenerationParams {
@@ -10,6 +9,7 @@ interface ThumbnailGenerationParams {
   videoType?: string;
   instructions?: string;
   referenceImages: string[]; // Reference thumbnails for style learning
+  userId: string;
 }
 
 interface ThumbnailVariation {
@@ -127,22 +127,20 @@ export async function generateThumbnails(
           if (part.inlineData && part.inlineData.data) {
             const base64Data = part.inlineData.data;
             
-            // Save thumbnail
-            const publicDir = path.join(process.cwd(), 'public', 'thumbnails');
-            await fs.mkdir(publicDir, { recursive: true });
+            // Upload thumbnail to Cloudinary
+            const result = await uploadToCloudinary(
+              `data:image/png;base64,${base64Data}`,
+              {
+                folder: 'thumbnails',
+                userId: params.userId,
+                resourceType: 'image',
+              }
+            );
 
-            const timestamp = Date.now();
-            const filename = `thumbnail_${styleKey}_${timestamp}.png`;
-            const filepath = path.join(publicDir, filename);
-
-            // Convert base64 to buffer and save
-            const buffer = Buffer.from(base64Data, 'base64');
-            await fs.writeFile(filepath, buffer);
-
-            console.log(`Saved ${styleConfig.name}: ${filename}`);
+            console.log(`Uploaded ${styleConfig.name}: ${result.publicId}`);
 
             thumbnails.push({
-              imageUrl: `/thumbnails/${filename}`,
+              imageUrl: result.url,
               style: styleConfig.name,
               dominantColor: styleConfig.dominantColor,
               emotion: styleConfig.emotion,

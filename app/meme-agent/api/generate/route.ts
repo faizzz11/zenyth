@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { generateMemeConcept } from '../../services/memeConceptGenerator';
 import { generateMemeImage } from '../../services/memeImageGenerator';
 import { generateMemeVideo } from '../../services/memeVideoGenerator';
@@ -11,19 +12,35 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Parse and validate request body
-    const body: GenerationRequest = await request.json();
-    
-    const { mode, topic, style, generateVideo, userId } = body;
-    
-    // Validate required fields
-    if (!mode || !topic || !style || !userId) {
+    // Authenticate user
+    const { userId } = await auth();
+    if (!userId) {
       return NextResponse.json(
         {
           success: false,
           error: {
             stage: 'concept',
-            message: 'Missing required fields: mode, topic, style, userId',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        } as GenerationResponse,
+        { status: 401 }
+      );
+    }
+
+    // Parse and validate request body
+    const body: GenerationRequest = await request.json();
+    
+    const { mode, topic, style, generateVideo } = body;
+    
+    // Validate required fields
+    if (!mode || !topic || !style) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            stage: 'concept',
+            message: 'Missing required fields: mode, topic, style',
             retryable: false,
           },
         } as GenerationResponse,
@@ -90,12 +107,12 @@ export async function POST(request: NextRequest) {
       try {
         imageUrl = await generateMemeImage(concept.visualDescription);
         
-        // Compress and store the image
+        // Compress and store the image on Cloudinary
         const timestamp = Date.now();
         const filename = generateMemeFilename(userId, timestamp);
-        const compressionResult = await compressAndStoreImage(imageUrl, filename);
+        const compressionResult = await compressAndStoreImage(imageUrl, filename, userId);
         
-        // Use the compressed image URL
+        // Use the Cloudinary URL
         imageUrl = compressionResult.compressedUrl;
         
         // Log compression stats
@@ -117,38 +134,14 @@ export async function POST(request: NextRequest) {
       if (generateVideo) {
         const videoStartTime = Date.now();
         try {
-          videoUrl = await generateMemeVideo(imageUrl, concept.caption, concept.punchline);
+          videoUrl = await generateMemeVideo(imageUrl, concept.caption, concept.punchline, userId);
           videoTime = Date.now() - videoStartTime;
         } catch (error) {
           // Video generation failure is not fatal - we still have the image
           safeError('Video generation failed (FFmpeg may not be installed):', error);
           console.warn('Continuing without video. To enable video generation, install FFmpeg.');
-          // Don't throw - just continue without video
           videoTime = 0;
         }
-      }
-      
-      // Validate URLs are accessible
-      try {
-        // For relative URLs (like /memes/...), convert to full URL for validation
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`;
-        
-        const imageResponse = await fetch(fullImageUrl, { method: 'HEAD' });
-        if (!imageResponse.ok) {
-          throw new Error('Image URL is not accessible');
-        }
-        
-        if (videoUrl) {
-          const fullVideoUrl = videoUrl.startsWith('http') ? videoUrl : `${baseUrl}${videoUrl}`;
-          const videoResponse = await fetch(fullVideoUrl, { method: 'HEAD' });
-          if (!videoResponse.ok) {
-            console.warn('Video URL is not accessible, but continuing');
-          }
-        }
-      } catch (error) {
-        safeError('URL validation failed:', error);
-        // Don't fail the request if validation fails - the URLs might still work
       }
       
       // Store result in MongoDB

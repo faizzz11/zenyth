@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { MemeHistoryItem } from '../../types';
 
 export async function GET(request: NextRequest) {
   try {
-    // Parse query parameters
-    const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId');
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 50); // Max 50
-    
-    // Validate userId
+    // Authenticate user
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         {
           success: false,
-          error: 'userId is required',
+          error: 'Authentication required',
         },
-        { status: 400 }
+        { status: 401 }
       );
     }
+
+    // Parse query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 50); // Max 50
     
     // Validate pagination parameters
     if (page < 1) {

@@ -1,12 +1,12 @@
 import { GoogleGenAI } from '@google/genai';
 import { safeError } from '@/lib/securityUtils';
-import path from 'path';
-import fs from 'fs/promises';
+import { uploadBufferToCloudinary } from '@/lib/cloudinary';
 
 export async function generateMemeVideo(
   imageUrl: string,
   caption: string,
-  punchline: string
+  punchline: string,
+  userId: string
 ): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -59,16 +59,13 @@ Style: Dynamic, eye-catching, with bold text overlays`;
       const startTime = Date.now();
 
       while (!operation.done) {
-        // Check if we've exceeded max poll time
         if (Date.now() - startTime > maxPollTime) {
           throw new Error('Video generation exceeded maximum wait time (6 minutes)');
         }
 
-        // Wait before polling again
         console.log('Waiting for video generation to complete...');
         await new Promise(resolve => setTimeout(resolve, pollInterval));
 
-        // Get updated operation status - pass the operation object itself
         operation = await ai.operations.getVideosOperation({
           operation: operation,
         });
@@ -88,21 +85,12 @@ Style: Dynamic, eye-catching, with bold text overlays`;
 
       const video = operation.response.generatedVideos[0].video;
       
-      // Step 5: Save video to public directory
-      const publicDir = path.join(process.cwd(), 'public', 'memes');
-      await fs.mkdir(publicDir, { recursive: true });
+      // Step 5: Get video buffer and upload to Cloudinary
+      let videoBuffer: Buffer;
 
-      const timestamp = Date.now();
-      const filename = `meme_video_${timestamp}.mp4`;
-      const filepath = path.join(publicDir, filename);
-
-      // Check if video has videoBytes property
       if (video.videoBytes) {
-        // Video data is available as bytes
-        const buffer = Buffer.from(video.videoBytes);
-        await fs.writeFile(filepath, buffer);
+        videoBuffer = Buffer.from(video.videoBytes);
       } else if (video.uri) {
-        // Video is available via URI - need to download it
         const response = await fetch(video.uri, {
           headers: {
             'x-goog-api-key': apiKey,
@@ -114,27 +102,31 @@ Style: Dynamic, eye-catching, with bold text overlays`;
         }
         
         const arrayBuffer = await response.arrayBuffer();
-        await fs.writeFile(filepath, Buffer.from(arrayBuffer));
+        videoBuffer = Buffer.from(arrayBuffer);
       } else {
         throw new Error('Video has neither videoBytes nor uri property');
       }
 
-      // Validate the file exists and has content
-      const stats = await fs.stat(filepath);
-      if (stats.size === 0) {
-        throw new Error('Generated video file is empty');
+      if (videoBuffer.length === 0) {
+        throw new Error('Generated video buffer is empty');
       }
 
-      console.log(`Video saved successfully: ${filename} (${stats.size} bytes)`);
+      // Upload to Cloudinary
+      const result = await uploadBufferToCloudinary(videoBuffer, {
+        folder: 'memes',
+        userId,
+        resourceType: 'video',
+      });
 
-      // Return relative URL
-      return `/memes/${filename}`;
+      console.log(`Video uploaded to Cloudinary: ${result.url} (${result.bytes} bytes)`);
+
+      return result.url;
     } catch (error) {
       lastError = error as Error;
       safeError(`Veo video generation attempt ${attempt + 1} failed:`, error);
       
       if (attempt < maxRetries - 1) {
-        const delay = 5000; // 5 second delay between retries
+        const delay = 5000;
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }

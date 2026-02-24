@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import ModeSelector from './components/ModeSelector';
 import TrendingTopics from './components/TrendingTopics';
@@ -21,6 +22,9 @@ import {
 } from './types';
 
 export default function MemeAgentPage() {
+  // Auth state
+  const { user } = useUser();
+
   // Mode state
   const [mode, setMode] = useState<GenerationMode>('ai-suggested');
   
@@ -112,7 +116,6 @@ export default function MemeAgentPage() {
           topic,
           style: selectedStyle,
           generateVideo: videoEnabled,
-          userId: 'demo-user', // TODO: Replace with actual user ID from auth
         }),
       });
       
@@ -142,6 +145,7 @@ export default function MemeAgentPage() {
   };
   
   const canGenerate = () => {
+    if (!user) return false;
     if (isGenerating) return false;
     if (mode === 'ai-suggested') return selectedTrendingTopic !== null;
     if (mode === 'custom') return customTopic.length >= 3 && customTopic.length <= 200;
@@ -259,7 +263,7 @@ export default function MemeAgentPage() {
 
               {/* Meme History */}
               <div className="w-full max-w-[1000px] lg:w-[1000px] mt-16 mb-12">
-                <MemeHistory userId="demo-user" />
+                <MemeHistory userId={user?.id || ''} />
               </div>
             </div>
           </div>

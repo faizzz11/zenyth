@@ -1,10 +1,9 @@
 /**
  * Server-side image compression service for meme images
- * Compresses images before storing them to reduce storage costs
+ * Uploads images to Cloudinary for cloud storage with per-user isolation
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export interface CompressionResult {
   compressedUrl: string;
@@ -14,11 +13,12 @@ export interface CompressionResult {
 }
 
 /**
- * Compress an image from a URL and save it to the public directory
+ * Compress an image from a URL and upload it to Cloudinary
  */
 export async function compressAndStoreImage(
   imageUrl: string,
-  filename: string
+  filename: string,
+  userId: string
 ): Promise<CompressionResult> {
   try {
     // Fetch the original image
@@ -30,54 +30,25 @@ export async function compressAndStoreImage(
     const originalBuffer = Buffer.from(await response.arrayBuffer());
     const originalSize = originalBuffer.length;
 
-    // Try to use sharp for compression if available
-    let compressedBuffer: Buffer;
-    let compressedSize: number;
+    // Convert buffer to base64 data URL for Cloudinary upload
+    const base64Data = `data:image/jpeg;base64,${originalBuffer.toString('base64')}`;
 
-    try {
-      const sharp = require('sharp');
-      
-      // Compress with sharp
-      compressedBuffer = await sharp(originalBuffer)
-        .resize(1920, 1080, {
-          fit: 'inside',
-          withoutEnlargement: true,
-        })
-        .jpeg({
-          quality: 85,
-          mozjpeg: true,
-        })
-        .toBuffer();
-      
-      compressedSize = compressedBuffer.length;
-    } catch (error) {
-      // If sharp is not available, use the original buffer
-      console.warn('Sharp not available, using original image:', error);
-      compressedBuffer = originalBuffer;
-      compressedSize = originalSize;
-    }
-
-    // Ensure the memes directory exists
-    const memesDir = path.join(process.cwd(), 'public', 'memes');
-    await fs.mkdir(memesDir, { recursive: true });
-
-    // Save the compressed image
-    const filepath = path.join(memesDir, filename);
-    await fs.writeFile(filepath, compressedBuffer);
-
-    // Return the public URL
-    const compressedUrl = `/memes/${filename}`;
-    const compressionRatio = compressedSize / originalSize;
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(base64Data, {
+      folder: 'memes',
+      userId,
+      resourceType: 'image',
+    });
 
     return {
-      compressedUrl,
+      compressedUrl: result.url,
       originalSize,
-      compressedSize,
-      compressionRatio,
+      compressedSize: result.bytes,
+      compressionRatio: result.bytes / originalSize,
     };
   } catch (error) {
-    console.error('Image compression failed:', error);
-    // If compression fails, return the original URL
+    console.error('Image compression/upload failed:', error);
+    // If upload fails, return the original URL
     return {
       compressedUrl: imageUrl,
       originalSize: 0,
@@ -91,33 +62,5 @@ export async function compressAndStoreImage(
  * Generate a unique filename for a meme image
  */
 export function generateMemeFilename(userId: string, timestamp: number): string {
-  return `meme_${userId}_${timestamp}.jpg`;
-}
-
-/**
- * Clean up old meme files (optional maintenance function)
- */
-export async function cleanupOldMemes(daysOld: number = 30): Promise<number> {
-  try {
-    const memesDir = path.join(process.cwd(), 'public', 'memes');
-    const files = await fs.readdir(memesDir);
-    
-    const cutoffTime = Date.now() - (daysOld * 24 * 60 * 60 * 1000);
-    let deletedCount = 0;
-
-    for (const file of files) {
-      const filepath = path.join(memesDir, file);
-      const stats = await fs.stat(filepath);
-      
-      if (stats.mtimeMs < cutoffTime) {
-        await fs.unlink(filepath);
-        deletedCount++;
-      }
-    }
-
-    return deletedCount;
-  } catch (error) {
-    console.error('Failed to cleanup old memes:', error);
-    return 0;
-  }
+  return `meme_${userId}_${timestamp}`;
 }
