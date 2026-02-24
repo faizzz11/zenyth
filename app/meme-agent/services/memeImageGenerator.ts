@@ -13,7 +13,7 @@ export async function generateMemeImage(
 
   let lastError: Error;
   const maxRetries = 3;
-  const timeout = 30000;
+  const timeout = 60000; // 60 seconds for image generation
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {

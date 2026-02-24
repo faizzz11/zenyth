@@ -14,8 +14,10 @@ You must return ONLY a valid JSON object with these exact fields:
 {
   "caption": "A witty caption (max 100 characters)",
   "punchline": "A humorous punchline (max 100 characters)",
-  "visualDescription": "A detailed description for image generation (2-3 sentences)"
+  "visualDescription": "A detailed description for image generation that MUST include instructions to render the caption and punchline as text overlays on the image"
 }
+
+IMPORTANT: The visualDescription must explicitly instruct the image generator to include the caption text at the TOP of the image and the punchline text at the BOTTOM of the image, in bold, readable font with contrasting colors (white text with black outline or black text with white background).
 
 Requirements:
 - The meme should be appropriate for social media
@@ -24,10 +26,10 @@ Requirements:
 - Return ONLY the JSON object, no markdown formatting, no additional text
 
 Example format:
-{"caption": "When you...", "punchline": "But then...", "visualDescription": "An image showing..."}`;
+{"caption": "When you...", "punchline": "But then...", "visualDescription": "A funny image of [subject]. The text 'When you...' appears at the top in bold white letters with black outline. The text 'But then...' appears at the bottom in bold white letters with black outline."}`;
 
 
-  const response = await client.generateWithRetry(prompt, 3, 10000);
+  const response = await client.generateWithRetry(prompt, 3, 30000);
   
   // Clean the response - remove markdown code blocks if present
   let cleanedResponse = response.trim();

@@ -61,9 +61,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Set up timeout for entire pipeline (60 seconds)
+    // Set up timeout for entire pipeline (8 minutes for video generation)
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Generation pipeline timed out after 60 seconds')), 60000);
+      setTimeout(() => reject(new Error('Generation pipeline timed out after 8 minutes')), 480000);
     });
     
     const generationPromise = (async () => {
@@ -118,16 +118,14 @@ export async function POST(request: NextRequest) {
         const videoStartTime = Date.now();
         try {
           videoUrl = await generateMemeVideo(imageUrl, concept.caption, concept.punchline);
+          videoTime = Date.now() - videoStartTime;
         } catch (error) {
           // Video generation failure is not fatal - we still have the image
-          safeError('Video generation failed:', error);
-          throw {
-            stage: 'video',
-            message: `Failed to generate meme video: ${createSafeErrorMessage(error as Error)}. Image is still available.`,
-            retryable: true,
-          };
+          safeError('Video generation failed (FFmpeg may not be installed):', error);
+          console.warn('Continuing without video. To enable video generation, install FFmpeg.');
+          // Don't throw - just continue without video
+          videoTime = 0;
         }
-        videoTime = Date.now() - videoStartTime;
       }
       
       // Validate URLs are accessible

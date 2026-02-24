@@ -12,7 +12,7 @@ export class GeminiClient {
     this.client = new GoogleGenAI({ apiKey });
   }
 
-  async generateText(prompt: string, timeout: number = 10000): Promise<string> {
+  async generateText(prompt: string, timeout: number = 30000): Promise<string> {
     return Promise.race([
       (async () => {
         const response = await this.client.models.generateContent({
@@ -35,7 +35,7 @@ export class GeminiClient {
   async generateWithRetry(
     prompt: string,
     maxRetries: number = 3,
-    timeout: number = 10000
+    timeout: number = 30000
   ): Promise<string> {
     let lastError: Error;
     
