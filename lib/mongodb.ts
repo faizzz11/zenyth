@@ -20,6 +20,8 @@ export async function connectToDatabase(): Promise<Db> {
   // Create indexes
   await db.collection('memes').createIndex({ userId: 1, createdAt: -1 });
   await db.collection('memes').createIndex({ createdAt: -1 });
+  await db.collection('content_plans').createIndex({ userId: 1, createdAt: -1 });
+  await db.collection('content_plans').createIndex({ createdAt: -1 });
 
   return db;
 }
