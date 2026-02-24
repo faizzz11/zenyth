@@ -35,7 +35,6 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (isPlaying) {
       audio.pause();
     } else {
@@ -47,7 +46,6 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const newTime = parseFloat(e.target.value);
     audio.currentTime = newTime;
     setCurrentTime(newTime);
@@ -59,85 +57,80 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white p-6 flex flex-col gap-5">
+      <h3 className="text-lg font-semibold text-[#37322F] font-sans">{title}</h3>
 
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
-      {/* Waveform visualization placeholder */}
-      <div className="bg-gradient-to-r from-blue-400 to-purple-500 h-24 rounded-lg mb-4 flex items-center justify-center">
-        <div className="flex gap-1 items-end h-16">
-          {[...Array(40)].map((_, i) => (
+      {/* Waveform visualization */}
+      <div className="h-20 rounded-lg bg-[#FBFAF9] border border-[rgba(55,50,47,0.06)] flex items-center justify-center px-3">
+        <div className="flex gap-[3px] items-end h-14 w-full">
+          {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className="w-1 bg-white rounded-full animate-pulse"
+              className="flex-1 rounded-full transition-colors"
               style={{
-                height: `${Math.random() * 100}%`,
-                animationDelay: `${i * 0.05}s`,
+                height: `${20 + Math.sin(i * 0.5) * 40 + Math.random() * 30}%`,
+                backgroundColor: i / 50 * 100 < progress
+                  ? 'oklch(0.6 0.2 45)'
+                  : 'rgba(55,50,47,0.15)',
               }}
             />
           ))}
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="space-y-4">
-        {/* Progress bar */}
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600 w-12">{formatTime(currentTime)}</span>
+      {/* Progress bar */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-[#847971] font-sans w-10 text-right">{formatTime(currentTime)}</span>
+        <div className="flex-1 relative h-1.5 bg-[rgba(55,50,47,0.10)] rounded-full overflow-hidden">
+          <div
+            className="absolute left-0 top-0 h-full rounded-full"
+            style={{ width: `${progress}%`, backgroundColor: 'oklch(0.6 0.2 45)' }}
+          />
           <input
             type="range"
             min="0"
             max={duration || 0}
             value={currentTime}
             onChange={handleSeek}
-            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
-                (currentTime / duration) * 100
-              }%, #e5e7eb ${(currentTime / duration) * 100}%, #e5e7eb 100%)`,
-            }}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <span className="text-sm text-gray-600 w-12">{formatTime(duration)}</span>
         </div>
+        <span className="text-xs text-[#847971] font-sans w-10">{formatTime(duration)}</span>
+      </div>
 
-        {/* Play/Pause button */}
-        <div className="flex justify-center">
-          <button
-            onClick={togglePlay}
-            className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg"
-          >
-            {isPlaying ? (
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-              </svg>
-            ) : (
-              <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* Download button */}
-        <div className="flex justify-center">
-          <a
-            href={audioUrl}
-            download
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-4">
+        <button
+          onClick={togglePlay}
+          className="w-14 h-14 rounded-full bg-[oklch(0.6_0.2_45)] flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm relative overflow-hidden"
+        >
+          <div className="w-full h-full absolute left-0 top-0 bg-linear-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
+          {isPlaying ? (
+            <svg className="w-6 h-6 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
             </svg>
-            Download Audio
-          </a>
-        </div>
+          ) : (
+            <svg className="w-6 h-6 text-white ml-0.5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          )}
+        </button>
+
+        <a
+          href={audioUrl}
+          download
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-[rgba(55,50,47,0.12)] text-[#605A57] text-sm font-medium font-sans hover:bg-[rgba(55,50,47,0.04)] transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download
+        </a>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { parsePromptToParameters } from '../../services/promptParser';
 import { generateMusic } from '../../services/musicGenerator';
 import { connectToDatabase } from '@/lib/mongodb';
@@ -9,19 +10,22 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const body: MusicGenerationRequest = await request.json();
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: { message: 'Unauthorized', retryable: false } } as MusicGenerationResponse,
+        { status: 401 }
+      );
+    }
 
-    const { mood, tempo, bpm, genre, singerStyle, freeTextPrompt, userId } = body;
+    const body: Omit<MusicGenerationRequest, 'userId'> = await request.json();
+    const { mood, tempo, bpm, genre, singerStyle, freeTextPrompt } = body;
 
-    // Validate required fields
-    if (!mood || !tempo || !genre || !userId) {
+    if (!mood || !tempo || !genre) {
       return NextResponse.json(
         {
           success: false,
-          error: {
-            message: 'Missing required fields: mood, tempo, genre, userId',
-            retryable: false,
-          },
+          error: { message: 'Missing required fields: mood, tempo, genre', retryable: false },
         } as MusicGenerationResponse,
         { status: 400 }
       );
@@ -37,8 +41,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: {
-            message:
-              'Voice cloning is not supported. This system generates instrumental music in the stylistic essence of artists, not voice replicas.',
+            message: 'Voice cloning is not supported. This system generates music in the stylistic essence of artists, not voice replicas.',
             retryable: false,
           },
         } as MusicGenerationResponse,
@@ -46,12 +49,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse parameters
     const parsed = parsePromptToParameters(mood, tempo, genre, singerStyle, freeTextPrompt);
 
     console.log('Generating music with parameters:', parsed);
 
-    // Generate music (30 seconds)
     const audioUrl = await generateMusic({
       styleDescription: parsed.styleDescription,
       bpm: bpm || parsed.bpm || 110,
@@ -87,15 +88,14 @@ export async function POST(request: NextRequest) {
       safeError('Failed to store music in database:', error);
     }
 
-    // Return response
     return NextResponse.json({
       success: true,
       output: {
         audioUrl,
         styleReference: singerStyle || 'Original style',
-        tempo: tempo,
-        mood: mood,
-        genre: genre,
+        tempo,
+        mood,
+        genre,
         duration: 30,
       },
     } as MusicGenerationResponse);
@@ -104,10 +104,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: {
-          message: error.message || 'An unexpected error occurred',
-          retryable: true,
-        },
+        error: { message: error.message || 'An unexpected error occurred', retryable: true },
       } as MusicGenerationResponse,
       { status: 500 }
     );

@@ -46,3 +46,19 @@ export interface MusicDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface MusicHistoryItem {
+  id: string;
+  userId: string;
+  mood: MusicMood;
+  tempo: MusicTempo;
+  genre: MusicGenre;
+  singerStyle?: string;
+  prompt: string;
+  output: {
+    audioUrl: string;
+    duration: number;
+  };
+  createdAt: Date;
+}
+

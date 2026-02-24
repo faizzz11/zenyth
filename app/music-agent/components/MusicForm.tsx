@@ -13,9 +13,38 @@ interface MusicFormProps {
     freeTextPrompt?: string;
   }) => void;
   isGenerating: boolean;
+  disabled?: boolean;
 }
 
-export default function MusicForm({ onGenerate, isGenerating }: MusicFormProps) {
+const moods: { value: MusicMood; label: string }[] = [
+  { value: 'romantic', label: 'Romantic' },
+  { value: 'sad', label: 'Sad' },
+  { value: 'energetic', label: 'Energetic' },
+  { value: 'aggressive', label: 'Aggressive' },
+  { value: 'nostalgic', label: 'Nostalgic' },
+  { value: 'chill', label: 'Chill' },
+  { value: 'upbeat', label: 'Upbeat' },
+];
+
+const tempos: { value: MusicTempo; label: string }[] = [
+  { value: 'slow', label: 'Slow' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'fast', label: 'Fast' },
+];
+
+const genres: { value: MusicGenre; label: string }[] = [
+  { value: 'rap', label: 'Rap' },
+  { value: 'pop', label: 'Pop' },
+  { value: 'classical', label: 'Classical' },
+  { value: 'bollywood', label: 'Bollywood' },
+  { value: 'rock', label: 'Rock' },
+  { value: 'lofi', label: 'Lo-Fi' },
+  { value: 'jazz', label: 'Jazz' },
+  { value: 'electronic', label: 'Electronic' },
+  { value: 'folk', label: 'Folk' },
+];
+
+export default function MusicForm({ onGenerate, isGenerating, disabled }: MusicFormProps) {
   const [mood, setMood] = useState<MusicMood>('energetic');
   const [tempo, setTempo] = useState<MusicTempo>('medium');
   const [bpm, setBpm] = useState<string>('');
@@ -35,52 +64,79 @@ export default function MusicForm({ onGenerate, isGenerating }: MusicFormProps) 
     });
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Mood Selection */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Mood</label>
-        <select
-          value={mood}
-          onChange={(e) => setMood(e.target.value as MusicMood)}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={isGenerating}
-        >
-          <option value="romantic">Romantic</option>
-          <option value="sad">Sad</option>
-          <option value="energetic">Energetic</option>
-          <option value="aggressive">Aggressive</option>
-          <option value="nostalgic">Nostalgic</option>
-          <option value="chill">Chill</option>
-          <option value="upbeat">Upbeat</option>
-        </select>
-      </div>
+  const isDisabled = isGenerating || disabled;
 
-      {/* Tempo Selection */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Tempo</label>
-        <div className="grid grid-cols-3 gap-3">
-          {(['slow', 'medium', 'fast'] as MusicTempo[]).map((t) => (
+  return (
+    <form onSubmit={handleSubmit} className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white p-6 sm:p-8 flex flex-col gap-6">
+      {/* Mood */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">Mood</label>
+        <div className="flex flex-wrap gap-2">
+          {moods.map((m) => (
             <button
-              key={t}
+              key={m.value}
               type="button"
-              onClick={() => setTempo(t)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                tempo === t
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              disabled={isGenerating}
+              onClick={() => setMood(m.value)}
+              disabled={isDisabled}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium font-sans transition-colors ${
+                mood === m.value
+                  ? 'bg-[oklch(0.6_0.2_45)] text-white'
+                  : 'bg-[#FBFAF9] border border-[rgba(55,50,47,0.12)] text-[#605A57] hover:bg-[rgba(55,50,47,0.06)]'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {m.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* BPM (Optional) */}
-      <div>
-        <label className="block text-sm font-medium mb-2">BPM (Optional)</label>
+      {/* Tempo */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">Tempo</label>
+        <div className="flex flex-wrap gap-2">
+          {tempos.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => setTempo(t.value)}
+              disabled={isDisabled}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium font-sans transition-colors ${
+                tempo === t.value
+                  ? 'bg-[oklch(0.6_0.2_45)] text-white'
+                  : 'bg-[#FBFAF9] border border-[rgba(55,50,47,0.12)] text-[#605A57] hover:bg-[rgba(55,50,47,0.06)]'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Genre */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">Genre</label>
+        <div className="flex flex-wrap gap-2">
+          {genres.map((g) => (
+            <button
+              key={g.value}
+              type="button"
+              onClick={() => setGenre(g.value)}
+              disabled={isDisabled}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium font-sans transition-colors ${
+                genre === g.value
+                  ? 'bg-[oklch(0.6_0.2_45)] text-white'
+                  : 'bg-[#FBFAF9] border border-[rgba(55,50,47,0.12)] text-[#605A57] hover:bg-[rgba(55,50,47,0.06)]'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* BPM */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">BPM (Optional)</label>
         <input
           type="number"
           value={bpm}
@@ -88,81 +144,51 @@ export default function MusicForm({ onGenerate, isGenerating }: MusicFormProps) 
           placeholder="e.g., 120"
           min="60"
           max="200"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={isGenerating}
+          disabled={isDisabled}
+          className="w-full px-4 py-2.5 rounded-lg border border-[rgba(55,50,47,0.12)] bg-[#FBFAF9] text-[#37322F] text-sm font-sans placeholder:text-[#847971] focus:outline-none focus:ring-2 focus:ring-[oklch(0.6_0.2_45)] focus:border-transparent disabled:opacity-50"
         />
       </div>
 
-      {/* Genre Selection */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Genre</label>
-        <select
-          value={genre}
-          onChange={(e) => setGenre(e.target.value as MusicGenre)}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={isGenerating}
-        >
-          <option value="rap">Rap</option>
-          <option value="pop">Pop</option>
-          <option value="classical">Classical</option>
-          <option value="bollywood">Bollywood</option>
-          <option value="rock">Rock</option>
-          <option value="lofi">Lo-Fi</option>
-          <option value="jazz">Jazz</option>
-          <option value="electronic">Electronic</option>
-          <option value="folk">Folk</option>
-        </select>
-      </div>
-
       {/* Singer Style */}
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          Singer Style (Optional)
-        </label>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">Singer Style (Optional)</label>
         <input
           type="text"
           value={singerStyle}
           onChange={(e) => setSingerStyle(e.target.value)}
           placeholder="e.g., Kumar Sanu, Arijit Singh"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={isGenerating}
+          disabled={isDisabled}
+          className="w-full px-4 py-2.5 rounded-lg border border-[rgba(55,50,47,0.12)] bg-[#FBFAF9] text-[#37322F] text-sm font-sans placeholder:text-[#847971] focus:outline-none focus:ring-2 focus:ring-[oklch(0.6_0.2_45)] focus:border-transparent disabled:opacity-50"
         />
-        <p className="text-xs text-gray-500 mt-1">
-          Note: Generates instrumental music in the stylistic essence, not voice cloning
+        <p className="text-xs text-[#847971] font-sans">
+          Generates music in the stylistic essence, not voice cloning
         </p>
       </div>
 
       {/* Free Text Prompt */}
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          Additional Instructions (Optional)
-        </label>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-[#37322F] font-sans">Additional Instructions (Optional)</label>
         <textarea
           value={freeTextPrompt}
           onChange={(e) => setFreeTextPrompt(e.target.value)}
           placeholder="Describe any specific musical elements you want..."
           rows={3}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          disabled={isGenerating}
+          disabled={isDisabled}
+          className="w-full px-4 py-2.5 rounded-lg border border-[rgba(55,50,47,0.12)] bg-[#FBFAF9] text-[#37322F] text-sm font-sans placeholder:text-[#847971] focus:outline-none focus:ring-2 focus:ring-[oklch(0.6_0.2_45)] focus:border-transparent resize-none disabled:opacity-50"
         />
       </div>
 
-      {/* Submit Button */}
+      {/* Generate Button */}
       <button
         type="submit"
-        disabled={isGenerating}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={isDisabled}
+        className="w-full h-14 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[rgba(55,50,47,0.40)] focus:ring-offset-2"
       >
-        {isGenerating ? 'Generating Music...' : 'Generate Music'}
+        <div className="w-full h-full absolute left-0 top-0 bg-linear-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
+        <div className="flex flex-col justify-center text-white text-base font-semibold leading-6 font-sans tracking-tight text-center">
+          {isGenerating ? 'Generating Music...' : 'Generate Music'}
+        </div>
       </button>
-
-      {/* Disclaimer */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <p className="text-sm text-yellow-800">
-          <strong>Disclaimer:</strong> This system generates AI instrumental music. It does not
-          clone voices or create official recordings of any artist.
-        </p>
-      </div>
     </form>
   );
 }
