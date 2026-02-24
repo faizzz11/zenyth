@@ -112,7 +112,7 @@ export default function LandingPage() {
 
               <div className="w-full max-w-[900px] lg:w-[900px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
                 <div className="backdrop-blur-[8.25px] flex flex-row justify-center items-center gap-3 sm:gap-4 w-full">
-                  <Link href="/auth/signup" className="flex-1 max-w-[280px]">
+                  <Link href="/dashboard" className="flex-1 max-w-[280px]">
                     <div className="h-14 sm:h-16 px-6 sm:px-8 py-3 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity w-full">
                       <div className="w-full h-full absolute left-0 top-0 bg-gradient-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
                       <div className="flex flex-col justify-center text-white text-base sm:text-lg font-semibold leading-6 font-sans tracking-tight text-center">

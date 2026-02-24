@@ -11,6 +11,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.38.2",
+    "@composio/core": "^0.6.3",
     "@google/genai": "^0.8.0",
     "fast-check": "^4.5.3",
     "mongodb": "^6.21.0",
