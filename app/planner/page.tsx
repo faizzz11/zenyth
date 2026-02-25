@@ -81,22 +81,15 @@ export default function PlannerPage() {
             <div className="border-b border-[rgba(55,50,47,0.12)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center gap-4">
-                            <Link href="/" className="text-[#37322F] hover:text-[#605A57] transition-colors">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[oklch(0.5_0.25_35)] flex items-center justify-center">
+                                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                            </Link>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[oklch(0.5_0.25_35)] flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h1 className="text-lg font-semibold text-[#37322F] font-sans">30-Day Content Planner</h1>
-                                    <p className="text-xs text-[#8B8580] font-sans">AI-powered content calendar based on trends</p>
-                                </div>
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-semibold text-[#37322F] font-sans">30-Day Content Planner</h1>
+                                <p className="text-xs text-[#8B8580] font-sans">AI-powered content calendar based on trends</p>
                             </div>
                         </div>
                         

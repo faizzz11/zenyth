@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 const quickActions = [
@@ -79,20 +79,20 @@ const stats = [
     { label: "Engagement Rate", value: "5.7%", change: "+1.2%", up: true },
 ]
 
-const recentActivity = [
-    { type: "thumbnail", title: "Generated 4 thumbnail variations", time: "2 hours ago", status: "completed" },
-    { type: "meme", title: "Created viral meme template", time: "5 hours ago", status: "completed" },
-    { type: "trend", title: "Trend alert: AI tools for creators", time: "8 hours ago", status: "alert" },
-    { type: "publish", title: "Published to YouTube & Instagram", time: "1 day ago", status: "completed" },
-    { type: "schedule", title: "Scheduled 5 posts for next week", time: "2 days ago", status: "scheduled" },
-]
-
 const trendingTopics = [
     { topic: "AI Video Editing", platform: "YouTube", spike: "+340%", heat: "🔥🔥🔥" },
     { topic: "Content Automation", platform: "LinkedIn", spike: "+180%", heat: "🔥🔥" },
     { topic: "Meme Marketing", platform: "Instagram", spike: "+95%", heat: "🔥" },
     { topic: "Creator Economy 2026", platform: "X", spike: "+250%", heat: "🔥🔥🔥" },
 ]
+
+interface Activity {
+    type: 'meme' | 'music' | 'thumbnail' | 'planner' | 'post';
+    title: string;
+    time: string;
+    status: 'completed' | 'alert' | 'scheduled';
+    details?: any;
+}
 
 export default function DashboardPage() {
     const [greeting] = useState(() => {
@@ -101,6 +101,72 @@ export default function DashboardPage() {
         if (hour < 17) return "Good afternoon"
         return "Good evening"
     })
+
+    const [activities, setActivities] = useState<Activity[]>([])
+    const [loadingActivities, setLoadingActivities] = useState(true)
+
+    useEffect(() => {
+        fetchActivities()
+    }, [])
+
+    const fetchActivities = async () => {
+        try {
+            const response = await fetch('/dashboard/api/activity')
+            const data = await response.json()
+            if (data.success) {
+                setActivities(data.activities)
+            }
+        } catch (error) {
+            console.error('Failed to fetch activities:', error)
+        } finally {
+            setLoadingActivities(false)
+        }
+    }
+
+    const getActivityIcon = (type: string) => {
+        switch (type) {
+            case 'meme':
+                return (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                        <line x1="9" y1="9" x2="9.01" y2="9" />
+                        <line x1="15" y1="9" x2="15.01" y2="9" />
+                    </svg>
+                )
+            case 'music':
+                return (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18V5l12-2v13" />
+                        <circle cx="6" cy="18" r="3" />
+                        <circle cx="18" cy="16" r="3" />
+                    </svg>
+                )
+            case 'thumbnail':
+                return (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                    </svg>
+                )
+            case 'planner':
+                return (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                )
+            default:
+                return (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                )
+        }
+    }
 
     return (
         <div className="min-h-screen bg-white">
@@ -202,53 +268,49 @@ export default function DashboardPage() {
                                 <h2 className="text-[15px] font-semibold text-[#37322F] font-sans">
                                     Recent Activity
                                 </h2>
-                                <button className="text-[12px] font-medium text-[oklch(0.6_0.2_45)] hover:underline font-sans">
-                                    View all
+                                <button 
+                                    onClick={fetchActivities}
+                                    className="text-[12px] font-medium text-[oklch(0.6_0.2_45)] hover:underline font-sans"
+                                >
+                                    Refresh
                                 </button>
                             </div>
                             <div className="divide-y divide-[rgba(55,50,47,0.06)]">
-                                {recentActivity.map((activity, index) => (
-                                    <div
-                                        key={index}
-                                        className="px-6 py-4 flex items-center gap-4 hover:bg-[rgba(55,50,47,0.02)] transition-colors"
-                                    >
-                                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${activity.status === "completed" ? "bg-emerald-50 text-emerald-600" :
-                                                activity.status === "alert" ? "bg-amber-50 text-amber-600" :
-                                                    "bg-blue-50 text-blue-600"
-                                            }`}>
-                                            {activity.status === "completed" && (
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="20 6 9 17 4 12" />
-                                                </svg>
-                                            )}
-                                            {activity.status === "alert" && (
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                                                </svg>
-                                            )}
-                                            {activity.status === "scheduled" && (
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <circle cx="12" cy="12" r="10" />
-                                                    <polyline points="12 6 12 12 16 14" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-[13px] font-medium text-[#37322F] font-sans truncate">
-                                                {activity.title}
-                                            </div>
-                                            <div className="text-[12px] text-[#847971] font-sans mt-0.5">
-                                                {activity.time}
-                                            </div>
-                                        </div>
-                                        <div className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${activity.status === "completed" ? "bg-emerald-50 text-emerald-700" :
-                                                activity.status === "alert" ? "bg-amber-50 text-amber-700" :
-                                                    "bg-blue-50 text-blue-700"
-                                            }`}>
-                                            {activity.status}
-                                        </div>
+                                {loadingActivities ? (
+                                    <div className="px-6 py-12 flex items-center justify-center">
+                                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[oklch(0.6_0.2_45)] border-t-transparent" />
                                     </div>
-                                ))}
+                                ) : activities.length === 0 ? (
+                                    <div className="px-6 py-12 text-center">
+                                        <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p className="text-sm text-[#847971]">No recent activity yet</p>
+                                        <p className="text-xs text-[#847971] mt-1">Start creating content to see your activity here</p>
+                                    </div>
+                                ) : (
+                                    activities.map((activity, index) => (
+                                        <div
+                                            key={index}
+                                            className="px-6 py-4 flex items-center gap-4 hover:bg-[rgba(55,50,47,0.02)] transition-colors"
+                                        >
+                                            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-emerald-50 text-emerald-600">
+                                                {getActivityIcon(activity.type)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-[13px] font-medium text-[#37322F] font-sans truncate">
+                                                    {activity.title}
+                                                </div>
+                                                <div className="text-[12px] text-[#847971] font-sans mt-0.5">
+                                                    {activity.time}
+                                                </div>
+                                            </div>
+                                            <div className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
+                                                {activity.status}
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>
@@ -260,7 +322,7 @@ export default function DashboardPage() {
                                 <h2 className="text-[15px] font-semibold text-[#37322F] font-sans">
                                     Trending Now 🔥
                                 </h2>
-                                <Link href="/dashboard/trends" className="text-[12px] font-medium text-[oklch(0.6_0.2_45)] hover:underline font-sans">
+                                <Link href="/trends-agent" className="text-[12px] font-medium text-[oklch(0.6_0.2_45)] hover:underline font-sans">
                                     Explore
                                 </Link>
                             </div>

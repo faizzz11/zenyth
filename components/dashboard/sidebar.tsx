@@ -64,7 +64,7 @@ const navItems = [
     },
     {
         label: "Content Planner",
-        href: "/dashboard/planner",
+        href: "/planner",
         icon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -76,7 +76,7 @@ const navItems = [
     },
     {
         label: "Trend Detector",
-        href: "/dashboard/trends",
+        href: "/trends-agent",
         icon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
@@ -171,9 +171,6 @@ export default function Sidebar() {
                                 <span className="text-[13px] font-medium leading-5 font-sans whitespace-nowrap">
                                     {item.label}
                                 </span>
-                            )}
-                            {isActive && !collapsed && (
-                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[oklch(0.6_0.2_45)]" />
                             )}
                         </Link>
                     )

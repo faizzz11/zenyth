@@ -462,60 +462,44 @@ export default function AllInOnePostPage() {
     : selectedPlatforms.length > 0 && Object.keys(manualContent).length > 0;
 
   return (
-    <div className="w-full min-h-screen relative bg-white overflow-x-hidden flex flex-col justify-start items-center">
-      <div className="relative flex flex-col justify-start items-center w-full">
-        <div className="w-full max-w-none px-4 sm:px-6 md:px-8 lg:px-0 lg:max-w-[1060px] lg:w-[1060px] relative flex flex-col justify-start items-start min-h-screen">
-          <div className="w-px h-full absolute left-4 sm:left-6 md:left-8 lg:left-0 top-0 bg-[rgba(55,50,47,0.12)] shadow-[1px_0px_0px_white] z-0"></div>
-          <div className="w-px h-full absolute right-4 sm:right-6 md:right-8 lg:right-0 top-0 bg-[rgba(55,50,47,0.12)] shadow-[1px_0px_0px_white] z-0"></div>
-
-          <div className="self-stretch pt-[9px] overflow-hidden border-b border-[rgba(55,50,47,0.06)] flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-[66px] relative z-10">
-            <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
-              <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
-              <div className="w-full max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[700px] lg:w-[700px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 pr-2 sm:pr-3 bg-white backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
-                <Link href="/" className="flex justify-center items-center">
-                  <div className="flex flex-col justify-center text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-medium leading-5 font-sans">Zenyth</div>
-                </Link>
-                <Link href="/dashboard">
-                  <div className="px-2 sm:px-3 md:px-[14px] py-1 sm:py-[6px] bg-white shadow-[0px_1px_2px_rgba(55,50,47,0.12)] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:bg-gray-50 transition-colors">
-                    <div className="flex flex-col justify-center text-[#37322F] text-xs md:text-[13px] font-medium leading-5 font-sans">Dashboard</div>
-                  </div>
-                </Link>
-              </div>
+    <div className="w-full min-h-screen relative bg-white overflow-x-hidden">
+      <div className="max-w-[1060px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[oklch(0.5_0.25_35)] flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
             </div>
-
-            <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-[160px] pb-8 flex flex-col justify-start items-center px-2 sm:px-4 md:px-8 lg:px-0 w-full">
-              <div className="w-full max-w-[937px] flex flex-col justify-center items-center gap-4">
-                <div className="text-center text-[#37322F] text-[24px] xs:text-[28px] sm:text-[36px] md:text-[52px] lg:text-[64px] font-normal leading-[1.1] font-serif">All In One Post</div>
-                <div className="text-center text-[rgba(55,50,47,0.80)] sm:text-lg md:text-xl leading-[1.4] font-sans text-sm font-medium max-w-[500px]">
-                  Generate AI-powered content or create manually, then publish to all your platforms at once.
-                </div>
-              </div>
-
-              <div className="w-full max-w-[800px] flex flex-col gap-6 mt-10">
-                {/* Tabs */}
-                <div className="flex rounded-full border border-[rgba(55,50,47,0.12)] bg-[#FBFAF9] p-1">
-                  <button onClick={() => setTab("ai")} className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${tab === "ai" ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}>Generate All with AI</button>
-                  <button onClick={() => setTab("manual")} className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${tab === "manual" ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}>Upload / Create Manually</button>
-                </div>
-
-                {renderPlatformToggles()}
-                {renderMediaUpload()}
-                {tab === "ai" ? renderAiTab() : renderManualTab()}
-                {renderPublishResults()}
-
-                {canPublish && (
-                  <button onClick={handlePublish} disabled={publishing}
-                    className="w-full h-14 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
-                    <div className="w-full h-full absolute left-0 top-0 bg-linear-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
-                    <span className="text-white text-base font-semibold relative z-10">
-                      {publishing ? "Publishing..." : `Post to ${selectedPlatforms.length} Platform${selectedPlatforms.length !== 1 ? "s" : ""}`}
-                    </span>
-                  </button>
-                )}
-                <div className="h-16" />
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#37322F] font-serif">All In One Post</h1>
+              <p className="text-sm text-[#8B8580]">Generate AI-powered content or create manually, then publish to all your platforms at once.</p>
             </div>
           </div>
+        </div>
+
+        <div className="w-full flex flex-col gap-6">
+          {/* Tabs */}
+          <div className="flex rounded-full border border-[rgba(55,50,47,0.12)] bg-[#FBFAF9] p-1">
+            <button onClick={() => setTab("ai")} className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${tab === "ai" ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}>Generate All with AI</button>
+            <button onClick={() => setTab("manual")} className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${tab === "manual" ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}>Upload / Create Manually</button>
+          </div>
+
+          {renderPlatformToggles()}
+          {renderMediaUpload()}
+          {tab === "ai" ? renderAiTab() : renderManualTab()}
+          {renderPublishResults()}
+
+          {canPublish && (
+            <button onClick={handlePublish} disabled={publishing}
+              className="w-full h-14 relative bg-[oklch(0.6_0.2_45)] shadow-[0px_0px_0px_3px_rgba(255,255,255,0.10)_inset] overflow-hidden rounded-full flex justify-center items-center cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+              <div className="w-full h-full absolute left-0 top-0 bg-linear-to-b from-[rgba(255,255,255,0.10)] to-[rgba(0,0,0,0.18)] mix-blend-multiply"></div>
+              <span className="text-white text-base font-semibold relative z-10">
+                {publishing ? "Publishing..." : `Post to ${selectedPlatforms.length} Platform${selectedPlatforms.length !== 1 ? "s" : ""}`}
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>
