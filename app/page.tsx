@@ -142,31 +142,34 @@ export default function LandingPage() {
                 />
               </div>
 
-              <div className="w-full max-w-[960px] lg:w-[960px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
-                <div className="w-full max-w-[960px] lg:w-[960px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
-                  <div className="self-stretch flex-1 flex justify-start items-start">
-                    <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full max-w-[960px] lg:w-[960px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-8 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
+                <div className="w-full bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
+                  <div className="self-stretch flex justify-start items-start">
+                    <div className="w-full flex items-center justify-center">
                       <div className="relative w-full overflow-hidden">
                         <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${activeCard * 100}%)` }}>
-                          <div className="w-full shrink-0">
+                          <div className="w-full shrink-0 flex items-center justify-center bg-white">
                             <img
                               src="/screenshot/image1.png"
                               alt="AI Content Dashboard - Meme Generator"
-                              className="w-full h-auto object-contain"
+                              className="w-full h-auto object-contain block"
+                              style={{ maxHeight: 'none' }}
                             />
                           </div>
-                          <div className="w-full shrink-0">
+                          <div className="w-full shrink-0 flex items-center justify-center bg-white">
                             <img
                               src="/screenshot/image2.png"
                               alt="AI Content Dashboard - Thumbnail Generator"
-                              className="w-full h-auto object-contain"
+                              className="w-full h-auto object-contain block"
+                              style={{ maxHeight: 'none' }}
                             />
                           </div>
-                          <div className="w-full shrink-0">
+                          <div className="w-full shrink-0 flex items-center justify-center bg-white">
                             <img
                               src="/screenshot/image3.png"
                               alt="AI Content Dashboard - Content Planner"
-                              className="w-full h-auto object-contain"
+                              className="w-full h-auto object-contain block"
+                              style={{ maxHeight: 'none' }}
                             />
                           </div>
                         </div>
