@@ -347,7 +347,7 @@ export default function CompetitorIntelPage() {
             <p className="text-[10px] text-[#847971] mb-2">Topics the competitor hasn't covered well — your opportunity.</p>
             <div className="flex flex-wrap gap-2">
               {gap.underservedTopics.map((t, i) => (
-                <span key={i} className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{t}</span>
+                <span key={i} className="inline-flex items-center rounded-full bg-[oklch(0.6_0.2_45)]/10 px-3 py-1 text-xs font-medium text-[oklch(0.5_0.2_45)]">{t}</span>
               ))}
             </div>
           </div>
@@ -358,7 +358,7 @@ export default function CompetitorIntelPage() {
             <p className="text-[10px] text-[#847971] mb-2">Saturated topics — differentiate or avoid.</p>
             <div className="flex flex-wrap gap-2">
               {gap.overusedThemes.map((t, i) => (
-                <span key={i} className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">{t}</span>
+                <span key={i} className="inline-flex items-center rounded-full bg-[rgba(55,50,47,0.06)] px-3 py-1 text-xs font-medium text-[#605A57]">{t}</span>
               ))}
             </div>
           </div>
@@ -369,7 +369,7 @@ export default function CompetitorIntelPage() {
             <p className="text-[10px] text-[#847971] mb-2">Rising topics the competitor hasn't covered yet.</p>
             <div className="flex flex-wrap gap-2">
               {gap.trendingOpportunities.map((t, i) => (
-                <span key={i} className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">{t}</span>
+                <span key={i} className="inline-flex items-center rounded-full bg-[#37322F] px-3 py-1 text-xs font-medium text-white">{t}</span>
               ))}
             </div>
           </div>

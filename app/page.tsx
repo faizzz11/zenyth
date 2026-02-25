@@ -143,14 +143,31 @@ export default function LandingPage() {
               </div>
 
               <div className="w-full max-w-[960px] lg:w-[960px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
-                <div className="w-full max-w-[960px] lg:w-[960px] h-[200px] sm:h-[280px] md:h-[450px] lg:h-[695.55px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
+                <div className="w-full max-w-[960px] lg:w-[960px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
                   <div className="self-stretch flex-1 flex justify-start items-start">
                     <div className="w-full h-full flex items-center justify-center">
-                      <div className="relative w-full h-full overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] flex items-center justify-center">
-                          <div className="text-center text-white/60 text-lg font-sans">
-                            <svg className="mx-auto mb-4 w-16 h-16 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                            AI Content Dashboard Preview
+                      <div className="relative w-full overflow-hidden">
+                        <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${activeCard * 100}%)` }}>
+                          <div className="w-full shrink-0">
+                            <img
+                              src="/screenshot/image1.png"
+                              alt="AI Content Dashboard - Meme Generator"
+                              className="w-full h-auto object-contain"
+                            />
+                          </div>
+                          <div className="w-full shrink-0">
+                            <img
+                              src="/screenshot/image2.png"
+                              alt="AI Content Dashboard - Thumbnail Generator"
+                              className="w-full h-auto object-contain"
+                            />
+                          </div>
+                          <div className="w-full shrink-0">
+                            <img
+                              src="/screenshot/image3.png"
+                              alt="AI Content Dashboard - Content Planner"
+                              className="w-full h-auto object-contain"
+                            />
                           </div>
                         </div>
                       </div>

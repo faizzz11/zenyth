@@ -5,7 +5,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 export const runtime = 'nodejs';
 
 interface Activity {
-    type: 'meme' | 'music' | 'thumbnail' | 'planner' | 'post';
+    type: 'meme' | 'music' | 'thumbnail' | 'planner' | 'post' | 'competitor';
     title: string;
     time: string;
     status: 'completed' | 'alert' | 'scheduled';
@@ -26,6 +26,17 @@ export async function GET(req: NextRequest) {
 
         const db = await connectToDatabase();
         const activities: Activity[] = [];
+
+        // Fetch counts for stats
+        const [memeCount, musicCount, thumbnailCount, planCount, analysisCount] = await Promise.all([
+            db.collection('memes').countDocuments({ userId }),
+            db.collection('music').countDocuments({ userId }),
+            db.collection('thumbnails').countDocuments({ userId }),
+            db.collection('content_plans').countDocuments({ userId }),
+            db.collection('competitor_analyses').countDocuments({ userId }),
+        ]);
+
+        const totalGenerated = memeCount + musicCount + thumbnailCount + planCount + analysisCount;
 
         // Fetch meme generations
         const memes = await db
@@ -115,6 +126,24 @@ export async function GET(req: NextRequest) {
             });
         });
 
+        // Fetch competitor analyses
+        const analyses = await db
+            .collection('competitor_analyses')
+            .find({ userId })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .toArray();
+
+        analyses.forEach(a => {
+            activities.push({
+                type: 'competitor',
+                title: `Analyzed ${a.platform === 'youtube' ? 'YouTube' : 'Instagram'}: ${a.channelName}`,
+                time: getRelativeTime(a.createdAt),
+                status: 'completed',
+                createdAt: a.createdAt,
+            });
+        });
+
         // Sort all activities by date and take top 10
         const sortedActivities = activities
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -122,7 +151,15 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            activities: sortedActivities
+            activities: sortedActivities,
+            stats: {
+                totalGenerated,
+                memes: memeCount,
+                music: musicCount,
+                thumbnails: thumbnailCount,
+                plans: planCount,
+                analyses: analysisCount,
+            },
         });
 
     } catch (error) {

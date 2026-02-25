@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { useUser } from "@clerk/nextjs"
 
 const navItems = [
     {
@@ -124,6 +125,13 @@ const bottomItems = [
 export default function Sidebar() {
     const pathname = usePathname()
     const [collapsed, setCollapsed] = useState(false)
+    const { user } = useUser()
+    const initials = user
+        ? `${(user.firstName?.[0] || "").toUpperCase()}${(user.lastName?.[0] || "").toUpperCase()}` || user.username?.[0]?.toUpperCase() || "U"
+        : "U"
+    const displayName = user?.firstName
+        ? `${user.firstName} ${user.lastName?.[0] ? user.lastName[0] + "." : ""}`.trim()
+        : user?.username || "User"
 
     return (
         <aside
@@ -218,19 +226,19 @@ export default function Sidebar() {
                 {/* User Profile */}
                 {!collapsed && (
                     <div className="mt-3 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[rgba(55,50,47,0.04)] transition-colors cursor-pointer">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[#37322F] flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-xs font-semibold">KB</span>
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[oklch(0.6_0.2_45)] to-[#37322F] flex items-center justify-center shrink-0">
+                            <span className="text-white text-xs font-semibold">{initials}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-medium text-[#37322F] truncate">Karan B.</div>
+                            <div className="text-[13px] font-medium text-[#37322F] truncate">{displayName}</div>
                             <div className="text-[11px] text-[#847971] truncate">Creator Plan</div>
                         </div>
                     </div>
                 )}
                 {collapsed && (
                     <div className="mt-3 flex justify-center">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[#37322F] flex items-center justify-center">
-                            <span className="text-white text-xs font-semibold">KB</span>
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[oklch(0.6_0.2_45)] to-[#37322F] flex items-center justify-center">
+                            <span className="text-white text-xs font-semibold">{initials}</span>
                         </div>
                     </div>
                 )}
