@@ -1,8 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Instrument_Serif } from "next/font/google"
-import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
-import Link from "next/link"
+import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
 
 const inter = Inter({
@@ -43,30 +42,7 @@ export default function RootLayout({
           />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400&display=swap" />
         </head>
-        <body className="font-sans antialiased">
-          {/* Auth Header */}
-          <div className="fixed top-0 right-0 z-50 p-4 flex items-center gap-4">
-            <SignedOut>
-              <Link 
-                href="/sign-in" 
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link 
-                href="/sign-up" 
-                className="px-4 py-2 text-sm font-medium bg-[oklch(0.6_0.2_45)] text-white rounded-lg hover:bg-[oklch(0.55_0.2_45)] transition-colors"
-              >
-                Sign Up
-              </Link>
-            </SignedOut>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-          </div>
-          
-          {children}
-        </body>
+        <body className="font-sans antialiased">{children}</body>
       </html>
     </ClerkProvider>
   )

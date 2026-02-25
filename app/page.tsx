@@ -28,6 +28,7 @@ function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0)
   const [progress, setProgress] = useState(0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const mountedRef = useRef(true)
 
   useEffect(() => {
@@ -71,18 +72,97 @@ export default function LandingPage() {
           <div className="w-[1px] h-full absolute right-4 sm:right-6 md:right-8 lg:right-0 top-0 bg-[rgba(55,50,47,0.12)] shadow-[1px_0px_0px_white] z-0"></div>
 
           <div className="self-stretch pt-[9px] overflow-hidden border-b border-[rgba(55,50,47,0.06)] flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-[66px] relative z-10">
-            <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
-              <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
+            <div className="w-full h-14 sm:h-16 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-4 sm:px-6 md:px-12 lg:px-0">
+              <div className="w-full h-0 absolute left-0 top-7 sm:top-8 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
 
-              <div className="w-full max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[700px] lg:w-[700px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 bg-white backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-hidden rounded-[50px] flex justify-center items-center relative z-30">
-                <div className="flex justify-center items-center">
-                  <div className="flex justify-start items-center">
-                    <div className="flex flex-col justify-center text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-medium leading-5 font-sans">
-                      Zenyth
-                    </div>
+              <div className="w-full max-w-[calc(100%-16px)] sm:max-w-[calc(100%-32px)] md:max-w-[calc(100%-64px)] lg:max-w-[700px] lg:w-[700px] h-11 sm:h-12 py-1.5 sm:py-2 px-4 sm:px-5 bg-white backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-visible rounded-[50px] flex justify-between items-center relative z-30">
+                {/* Logo */}
+                <div className="flex items-center">
+                  <div className="text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-medium leading-5 font-sans">
+                    Zenyth
                   </div>
                 </div>
+
+                {/* Desktop Nav Links */}
+                <div className="hidden sm:flex items-center gap-1">
+                  <Link
+                    href="/sign-in"
+                    className="px-3 py-1.5 text-[13px] font-medium text-[#605A57] hover:text-[#37322F] transition-colors font-sans rounded-full hover:bg-[rgba(55,50,47,0.04)]"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="px-4 py-1.5 text-[13px] font-medium bg-[oklch(0.6_0.2_45)] text-white rounded-full hover:opacity-90 transition-opacity font-sans"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button
+                  className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-[rgba(55,50,47,0.06)] transition-colors"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#37322F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#37322F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                  )}
+                </button>
               </div>
+
+              {/* Mobile Menu Dropdown */}
+              {mobileMenuOpen && (
+                <div className="sm:hidden absolute top-[52px] left-4 right-4 bg-white rounded-2xl shadow-lg border border-[rgba(55,50,47,0.10)] p-4 z-40 flex flex-col gap-2">
+                  <Link
+                    href="/dashboard"
+                    className="px-4 py-3 text-[14px] font-medium text-[#37322F] hover:bg-[rgba(55,50,47,0.04)] rounded-xl transition-colors font-sans"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/thumbnail-agent"
+                    className="px-4 py-3 text-[14px] font-medium text-[#37322F] hover:bg-[rgba(55,50,47,0.04)] rounded-xl transition-colors font-sans"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Thumbnail Agent
+                  </Link>
+                  <Link
+                    href="/meme-agent"
+                    className="px-4 py-3 text-[14px] font-medium text-[#37322F] hover:bg-[rgba(55,50,47,0.04)] rounded-xl transition-colors font-sans"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Meme Generator
+                  </Link>
+                  <div className="h-px bg-[rgba(55,50,47,0.08)] my-1" />
+                  <div className="flex gap-2">
+                    <Link
+                      href="/sign-in"
+                      className="flex-1 px-4 py-2.5 text-center text-[14px] font-medium text-[#37322F] border border-[rgba(55,50,47,0.15)] rounded-full hover:bg-[rgba(55,50,47,0.04)] transition-colors font-sans"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      className="flex-1 px-4 py-2.5 text-center text-[14px] font-medium text-white bg-[oklch(0.6_0.2_45)] rounded-full hover:opacity-90 transition-opacity font-sans"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-[216px] pb-8 sm:pb-12 md:pb-16 flex flex-col justify-start items-center px-2 sm:px-4 md:px-8 lg:px-0 w-full sm:pl-0 sm:pr-0 pl-0 pr-0">
