@@ -6,6 +6,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { safeError } from '@/lib/securityUtils';
 import { MusicGenerationRequest, MusicGenerationResponse, MusicDocument } from '../../types';
 
+export const maxDuration = 300; // 5 minutes for music generation
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     const generationTime = Date.now() - startTime;
 
-    // Store in database
+    // Store in database (non-blocking)
     try {
       const db = await connectToDatabase();
       const musicDocument: MusicDocument = {
@@ -84,8 +86,9 @@ export async function POST(request: NextRequest) {
       };
 
       await db.collection('music').insertOne(musicDocument);
-    } catch (error) {
-      safeError('Failed to store music in database:', error);
+    } catch (dbError) {
+      safeError('Failed to store music in database (non-critical):', dbError);
+      // Continue even if save fails
     }
 
     return NextResponse.json({
@@ -101,10 +104,16 @@ export async function POST(request: NextRequest) {
     } as MusicGenerationResponse);
   } catch (error: any) {
     safeError('Music generation error:', error);
+    
+    let errorMessage = error.message || 'An unexpected error occurred';
+    if (error.message?.includes('timeout') || error.message?.includes('ETIMEOUT')) {
+      errorMessage = 'Music generation is taking longer than expected. Please try again or use a simpler prompt.';
+    }
+    
     return NextResponse.json(
       {
         success: false,
-        error: { message: error.message || 'An unexpected error occurred', retryable: true },
+        error: { message: errorMessage, retryable: true },
       } as MusicGenerationResponse,
       { status: 500 }
     );

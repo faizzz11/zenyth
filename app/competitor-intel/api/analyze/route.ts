@@ -210,18 +210,36 @@ CRITICAL: Return ONLY valid JSON. No markdown, no code blocks, no extra text. Fo
       analyzedAt: new Date().toISOString(),
     };
 
-    // Save to MongoDB
-    const db = await connectToDatabase();
-    await db.collection('competitor_analyses').insertOne({
-      ...analysis,
-      createdAt: new Date(),
-    });
+    // Save to MongoDB with timeout handling
+    try {
+      const db = await connectToDatabase();
+      await db.collection('competitor_analyses').insertOne({
+        ...analysis,
+        createdAt: new Date(),
+      });
+    } catch (dbError) {
+      console.error('MongoDB save error (non-critical):', dbError);
+      // Continue even if save fails - user still gets the analysis
+    }
 
     return NextResponse.json({ success: true, analysis });
   } catch (error) {
     console.error('Competitor analysis error:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Analysis failed';
+    if (error instanceof Error) {
+      if (error.message.includes('ETIMEOUT') || error.message.includes('timeout')) {
+        errorMessage = 'Database connection timeout. Analysis completed but not saved. Please try again.';
+      } else if (error.message.includes('Apify')) {
+        errorMessage = 'Failed to scrape channel data. Please check the URL and try again.';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Analysis failed' },
+      { error: errorMessage },
       { status: 500 },
     );
   }
