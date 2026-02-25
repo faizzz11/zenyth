@@ -299,28 +299,68 @@ export async function POST(req: NextRequest) {
       // ─── LINKEDIN ───
       if (platform.name === "linkedin") {
         const commentary = String(platform.content.post ?? platform.content.short_version ?? platform.content.commentary ?? "").trim();
-        if (!commentary) { results.linkedin = { success: false, error: "No post content" }; continue; }
+        if (!commentary && !mediaBuffer) { results.linkedin = { success: false, error: "No post content" }; continue; }
 
         const personId = await resolveLinkedInPersonId(userId);
         if (!personId) { results.linkedin = { success: false, error: "Failed to resolve LinkedIn person ID. Try reconnecting LinkedIn in Settings." }; continue; }
 
         const postArgs: Record<string, unknown> = {
           author: `urn:li:person:${personId}`,
-          commentary,
+          commentary: commentary || undefined,
           visibility: "PUBLIC",
           lifecycleState: "PUBLISHED",
         };
 
-        // Attach media if available
-        if (mediaBuffer && mediaType === "image") {
-          const upload = await uploadToComposio(mediaBuffer, mediaName, mediaMime, "LINKEDIN", "LINKEDIN_CREATE_LINKED_IN_POST");
-          if (upload) {
-            postArgs.images = [{ name: mediaName, mimetype: mediaMime, s3key: upload.key }];
+        // Attach media if available (image only for LinkedIn)
+        if (mediaBuffer && mediaType === "image" && process.env.COMPOSIO_API_KEY) {
+          const hash = crypto.createHash("md5").update(mediaBuffer).digest("hex");
+          const uploadReq = await fetch("https://backend.composio.dev/api/v3/files/upload/request", {
+            method: "POST",
+            headers: {
+              "x-api-key": process.env.COMPOSIO_API_KEY,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              md5: hash,
+              mimetype: mediaMime || "image/jpeg",
+              filename: mediaName || "image.jpg",
+              toolkit_slug: "LINKEDIN",
+              tool_slug: "LINKEDIN_CREATE_LINKED_IN_POST",
+            }),
+          });
+
+          if (uploadReq.ok) {
+            const uploadJson = (await uploadReq.json()) as { key?: string; new_presigned_url?: string };
+            if (uploadJson.key && uploadJson.new_presigned_url) {
+              const uploadPut = await fetch(uploadJson.new_presigned_url, {
+                method: "PUT",
+                headers: { "content-type": mediaMime || "image/jpeg" },
+                body: new Uint8Array(mediaBuffer),
+              });
+              if (uploadPut.ok) {
+                postArgs.images = [{
+                  name: mediaName || "image.jpg",
+                  mimetype: mediaMime || "image/jpeg",
+                  s3key: uploadJson.key,
+                }];
+              } else {
+                console.error("LinkedIn: Failed to upload image to presigned URL");
+              }
+            } else {
+              console.error("LinkedIn: Invalid upload response from Composio");
+            }
+          } else {
+            console.error("LinkedIn: Failed to request upload URL", uploadReq.status);
           }
         }
 
-        await composio.tools.execute("LINKEDIN_CREATE_LINKED_IN_POST", { userId, arguments: postArgs });
-        results.linkedin = { success: true };
+        const postResult = await composio.tools.execute("LINKEDIN_CREATE_LINKED_IN_POST", { userId, arguments: postArgs });
+        const postRaw = postResult as any;
+        if (postRaw?.successful === false) {
+          results.linkedin = { success: false, error: postRaw?.error ?? "LinkedIn publish failed" };
+        } else {
+          results.linkedin = { success: true, ...(mediaBuffer && mediaType === "image" && !postArgs.images ? { error: "Posted text only — image upload failed" } : {}) };
+        }
       }
 
       // ─── YOUTUBE ───

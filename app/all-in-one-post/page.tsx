@@ -78,6 +78,7 @@ export default function AllInOnePostPage() {
   // Publishing state
   const [publishing, setPublishing] = useState(false);
   const [publishResults, setPublishResults] = useState<Record<string, { success: boolean; error?: string }> | null>(null);
+  const [publishingPhase, setPublishingPhase] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/all-in-one/connections")
@@ -177,10 +178,11 @@ export default function AllInOnePostPage() {
 
   const handlePublish = async () => {
     if (selectedPlatforms.length === 0) return;
-    setPublishing(true); setPublishResults(null);
+    setPublishing(true); setPublishResults(null); setPublishingPhase("Preparing content...");
 
     let base64: string | undefined;
     if (mediaFile) {
+      setPublishingPhase("Uploading media...");
       try { base64 = await fileToBase64(mediaFile); } catch {}
     }
 
@@ -191,6 +193,8 @@ export default function AllInOnePostPage() {
       mediaFile: base64 ? { base64, name: mediaFile!.name, type: mediaFile!.type } : undefined,
     }));
 
+    setPublishingPhase("Publishing to platforms...");
+
     try {
       const res = await fetch("/api/all-in-one/publish", {
         method: "POST",
@@ -199,7 +203,7 @@ export default function AllInOnePostPage() {
       });
       const data = await res.json();
       if (data.results) setPublishResults(data.results);
-    } catch {} finally { setPublishing(false); }
+    } catch {} finally { setPublishing(false); setPublishingPhase(""); }
   };
 
   const updateEditedField = (platform: string, field: string, value: string) => {
@@ -428,6 +432,39 @@ export default function AllInOnePostPage() {
     </div>
   );
 
+  const renderPublishingOverlay = () => {
+    if (!publishing) return null;
+    return (
+      <div className="rounded-xl border border-[oklch(0.6_0.2_45)]/30 bg-[oklch(0.6_0.2_45)]/5 p-6">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-[3px] border-[oklch(0.6_0.2_45)]/20 border-t-[oklch(0.6_0.2_45)] animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg className="h-5 w-5 text-[oklch(0.6_0.2_45)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-semibold text-[#37322F]">Publishing to {selectedPlatforms.length} platform{selectedPlatforms.length !== 1 ? "s" : ""}...</p>
+            <p className="text-xs text-[#847971] mt-1">{publishingPhase}</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 mt-2">
+            {selectedPlatforms.map((p) => (
+              <div key={p.name} className="flex items-center gap-2 rounded-full border border-[rgba(55,50,47,0.12)] bg-white px-3 py-1.5 animate-pulse">
+                <div className={`flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br ${PLATFORM_COLORS[p.name]} text-white`}>
+                  <div className="scale-75">{PLATFORM_ICONS[p.name]}</div>
+                </div>
+                <span className="text-xs font-medium text-[#605A57]">{p.label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-[#847971] mt-1">This may take a moment. Posts can take a few minutes to appear on your accounts.</p>
+        </div>
+      </div>
+    );
+  };
+
   const renderPublishResults = () => {
     if (!publishResults) return null;
     return (
@@ -467,7 +504,7 @@ export default function AllInOnePostPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[oklch(0.6_0.2_45)] to-[oklch(0.5_0.25_35)] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[oklch(0.6_0.2_45)] to-[oklch(0.5_0.25_35)] flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
               </svg>
@@ -489,6 +526,7 @@ export default function AllInOnePostPage() {
           {renderPlatformToggles()}
           {renderMediaUpload()}
           {tab === "ai" ? renderAiTab() : renderManualTab()}
+          {renderPublishingOverlay()}
           {renderPublishResults()}
 
           {canPublish && (
