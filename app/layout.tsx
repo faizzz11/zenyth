@@ -55,7 +55,7 @@ export default function RootLayout({
               </Link>
               <Link 
                 href="/sign-up" 
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-[oklch(0.6_0.2_45)] text-white rounded-lg hover:bg-[oklch(0.55_0.2_45)] transition-colors"
               >
                 Sign Up
               </Link>
