@@ -110,10 +110,42 @@ export default function CompetitorIntelPage() {
     if (!analysis) return null;
 
     const tabs = [
-      { id: "performance" as const, label: "Content Performance", icon: "📊" },
-      { id: "posting" as const, label: "Posting Patterns", icon: "📅" },
-      { id: "audience" as const, label: "Audience Insights", icon: "🎯" },
-      { id: "gaps" as const, label: "Content Gaps", icon: "💡" },
+      { 
+        id: "performance" as const, 
+        label: "Content Performance", 
+        icon: (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        )
+      },
+      { 
+        id: "posting" as const, 
+        label: "Posting Patterns", 
+        icon: (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        )
+      },
+      { 
+        id: "audience" as const, 
+        label: "Audience Insights", 
+        icon: (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        )
+      },
+      { 
+        id: "gaps" as const, 
+        label: "Content Gaps", 
+        icon: (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        )
+      },
     ];
 
     return (
@@ -183,9 +215,10 @@ export default function CompetitorIntelPage() {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`flex-1 rounded-full py-2 text-xs font-medium transition-all ${activeTab === t.id ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}
+              className={`flex-1 rounded-full py-2 px-3 text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${activeTab === t.id ? "bg-[#37322F] text-white shadow-sm" : "text-[#605A57] hover:text-[#37322F]"}`}
             >
-              <span className="hidden sm:inline">{t.icon} </span>{t.label}
+              <span className="hidden sm:inline">{t.icon}</span>
+              <span>{t.label}</span>
             </button>
           ))}
         </div>
@@ -201,7 +234,12 @@ export default function CompetitorIntelPage() {
         {/* Recommendations */}
         {analysis.recommendations && analysis.recommendations.length > 0 && (
           <div className="rounded-xl border border-[oklch(0.6_0.2_45)]/20 bg-[oklch(0.6_0.2_45)]/5 p-6">
-            <h3 className="text-sm font-semibold text-[#37322F] mb-3">🚀 Strategic Recommendations</h3>
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[oklch(0.6_0.2_45)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <h3 className="text-sm font-semibold text-[#37322F]">Strategic Recommendations</h3>
+            </div>
             <div className="space-y-2">
               {analysis.recommendations.map((rec, i) => (
                 <div key={i} className="flex items-start gap-2.5">
@@ -247,9 +285,25 @@ export default function CompetitorIntelPage() {
                     <p className="text-[10px] text-[#847971]">{v.date || ""}</p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-[10px] text-[#605A57]">
-                    <span>👁 {formatNumber(v.views)}</span>
-                    <span>❤️ {formatNumber(v.likes)}</span>
-                    <span>💬 {formatNumber(v.comments)}</span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      {formatNumber(v.views)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      {formatNumber(v.likes)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      {formatNumber(v.comments)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -343,7 +397,12 @@ export default function CompetitorIntelPage() {
       <div className="p-6 space-y-5">
         {gap.underservedTopics && gap.underservedTopics.length > 0 && (
           <div>
-            <h4 className="text-xs font-semibold text-[#37322F] mb-2">🔍 Underserved Topics</h4>
+            <div className="flex items-center gap-1.5 mb-2">
+              <svg className="w-3.5 h-3.5 text-[oklch(0.6_0.2_45)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <h4 className="text-xs font-semibold text-[#37322F]">Underserved Topics</h4>
+            </div>
             <p className="text-[10px] text-[#847971] mb-2">Topics the competitor hasn't covered well — your opportunity.</p>
             <div className="flex flex-wrap gap-2">
               {gap.underservedTopics.map((t, i) => (
@@ -354,7 +413,12 @@ export default function CompetitorIntelPage() {
         )}
         {gap.overusedThemes && gap.overusedThemes.length > 0 && (
           <div>
-            <h4 className="text-xs font-semibold text-[#37322F] mb-2">⚠️ Overused Themes</h4>
+            <div className="flex items-center gap-1.5 mb-2">
+              <svg className="w-3.5 h-3.5 text-[#847971]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <h4 className="text-xs font-semibold text-[#37322F]">Overused Themes</h4>
+            </div>
             <p className="text-[10px] text-[#847971] mb-2">Saturated topics — differentiate or avoid.</p>
             <div className="flex flex-wrap gap-2">
               {gap.overusedThemes.map((t, i) => (
@@ -365,7 +429,12 @@ export default function CompetitorIntelPage() {
         )}
         {gap.trendingOpportunities && gap.trendingOpportunities.length > 0 && (
           <div>
-            <h4 className="text-xs font-semibold text-[#37322F] mb-2">🚀 Trending Opportunities</h4>
+            <div className="flex items-center gap-1.5 mb-2">
+              <svg className="w-3.5 h-3.5 text-[oklch(0.6_0.2_45)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              <h4 className="text-xs font-semibold text-[#37322F]">Trending Opportunities</h4>
+            </div>
             <p className="text-[10px] text-[#847971] mb-2">Rising topics the competitor hasn't covered yet.</p>
             <div className="flex flex-wrap gap-2">
               {gap.trendingOpportunities.map((t, i) => (
