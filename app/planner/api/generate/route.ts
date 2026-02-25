@@ -5,9 +5,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import type { PlannerFormData, ContentPlan } from '../../types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+export const maxDuration = 120;
 
 /**
  * Fetch trending news and topics using SerpAPI
@@ -75,7 +73,7 @@ async function generateContentPlan(
 - Tone: ${formData.tone}
 
 **Current Trending News/Topics:**
-${newsContext.map((n: any, i: number) => `${i + 1}. ${n.title} (${n.source})`).join('\n')}
+${newsContext.length > 0 ? newsContext.map((n: any, i: number) => `${i + 1}. ${n.title} (${n.source})`).join('\n') : 'No trending data available'}
 
 **Requirements:**
 1. Create exactly ${totalPosts} content items spread across 30 days
@@ -105,69 +103,115 @@ ${newsContext.map((n: any, i: number) => `${i + 1}. ${n.title} (${n.source})`).j
 - Balance promotional and value-driven content
 - Ensure each platform gets content throughout the month
 
-Return ONLY valid JSON in this exact structure:
+CRITICAL: Return ONLY a valid JSON object with NO additional text, explanations, or markdown. The response must start with { and end with }.
+
+JSON Structure:
 {
   "weekSummaries": [
     {
       "week": 1,
-      "theme": "string",
-      "focus": "string",
-      "expectedReach": "string"
+      "theme": "Week 1 Theme",
+      "focus": "Focus area description",
+      "expectedReach": "Estimated reach"
     }
   ],
   "contentItems": [
     {
       "day": 1,
       "date": "YYYY-MM-DD",
-      "title": "string",
-      "description": "string",
-      "contentType": "string",
+      "title": "Content title",
+      "description": "Content description",
+      "contentType": "video",
       "platform": "youtube",
-      "keywords": ["string"],
-      "trendBased": boolean,
-      "trendSource": "string or null",
-      "estimatedEngagement": "low|medium|high",
-      "timeToCreate": "string",
-      "callToAction": "string",
-      "hashtags": ["string"],
-      "notes": "string or null"
+      "keywords": ["keyword1", "keyword2"],
+      "trendBased": false,
+      "trendSource": null,
+      "estimatedEngagement": "medium",
+      "timeToCreate": "2 hours",
+      "callToAction": "CTA text",
+      "hashtags": ["#hashtag1", "#hashtag2"],
+      "notes": null
     }
   ],
   "trendInsights": [
     {
-      "topic": "string",
-      "source": "string",
-      "relevance": 0-100,
-      "peakTime": "string",
+      "topic": "Trending topic",
+      "source": "Source name",
+      "relevance": 85,
+      "peakTime": "Time description",
       "suggestedDays": [1, 5, 10]
     }
   ],
-  "recommendations": ["string"]
+  "recommendations": ["Recommendation 1", "Recommendation 2"]
 }`;
 
     try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            throw new Error('GEMINI_API_KEY environment variable is not set');
+        }
+
+        const ai = new GoogleGenAI({ apiKey });
+
         const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+            },
         });
 
         const text = response.text || '';
+        console.log('AI Response preview:', text.substring(0, 500));
         
-        // Extract JSON from response
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            throw new Error('No JSON found in AI response');
+        // Extract JSON from response - handle markdown code blocks
+        let jsonText = text;
+        
+        // Remove markdown code blocks if present
+        const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1].trim();
+        } else {
+            // Try to find JSON object
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                jsonText = jsonMatch[0];
+            }
+        }
+        
+        if (!jsonText || (!jsonText.startsWith('{') && !jsonText.startsWith('['))) {
+            console.error('Invalid JSON response:', text.substring(0, 1000));
+            throw new Error('No valid JSON found in AI response');
         }
 
-        const planData = JSON.parse(jsonMatch[0]);
+        const planData = JSON.parse(jsonText);
+
+        // Validate required fields
+        if (!planData.contentItems || !Array.isArray(planData.contentItems)) {
+            console.error('Invalid plan data structure:', planData);
+            throw new Error('AI response missing contentItems array');
+        }
+
+        if (!planData.weekSummaries || !Array.isArray(planData.weekSummaries)) {
+            planData.weekSummaries = [];
+        }
+
+        if (!planData.trendInsights || !Array.isArray(planData.trendInsights)) {
+            planData.trendInsights = [];
+        }
+
+        if (!planData.recommendations || !Array.isArray(planData.recommendations)) {
+            planData.recommendations = [];
+        }
 
         // Add dates to content items
         planData.contentItems = planData.contentItems.map((item: any) => {
             const itemDate = new Date(startDate);
-            itemDate.setDate(itemDate.getDate() + item.day - 1);
+            itemDate.setDate(itemDate.getDate() + (item.day || 1) - 1);
             return {
                 ...item,
-                date: itemDate.toISOString().split('T')[0]
+                date: itemDate.toISOString().split('T')[0],
+                day: item.day || 1
             };
         });
 
@@ -190,8 +234,9 @@ Return ONLY valid JSON in this exact structure:
         return plan;
 
     } catch (error) {
-        console.error('AI plan generation error:', error);
-        throw new Error('Failed to generate content plan with AI');
+        console.error('AI plan generation error:', error instanceof Error ? error.message : error);
+        console.error('Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error as object), 2));
+        throw new Error(`Failed to generate content plan with AI: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 

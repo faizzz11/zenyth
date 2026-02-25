@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import crypto from "crypto";
 import { composio, composioAuthConfig } from "@/lib/composio";
+import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 
 function decodeJwt(token: string) {
   const parts = token.split(".");
@@ -138,64 +139,99 @@ export async function POST(req: NextRequest) {
       // ─── TWITTER ───
       if (platform.name === "twitter") {
         const text = String(platform.content.tweet ?? platform.content.text ?? "").trim();
-        if (!text) { results.twitter = { success: false, error: "No tweet text" }; continue; }
+        if (!text && !mediaBuffer) { results.twitter = { success: false, error: "No tweet text or media" }; continue; }
 
         let tweetMediaId: string | null = null;
 
-        if (mediaBuffer && platform.mediaFile?.base64) {
-          // Upload media to Composio's file storage first, then call the Twitter upload tool
-          const toolSlug = mediaType === "video" ? "TWITTER_UPLOAD_LARGE_MEDIA" : "TWITTER_UPLOAD_MEDIA";
-          const upload = await uploadToComposio(mediaBuffer, mediaName, mediaMime, "TWITTER", toolSlug);
+        if (mediaBuffer && process.env.COMPOSIO_API_KEY) {
+          // Step 1: Request presigned upload URL from Composio
+          const hash = crypto.createHash("md5").update(mediaBuffer).digest("hex");
+          const uploadReq = await fetch("https://backend.composio.dev/api/v3/files/upload/request", {
+            method: "POST",
+            headers: {
+              "x-api-key": process.env.COMPOSIO_API_KEY,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              md5: hash,
+              mimetype: mediaMime || "application/octet-stream",
+              filename: mediaName || "media",
+              toolkit_slug: "TWITTER",
+              tool_slug: "TWITTER_UPLOAD_LARGE_MEDIA",
+            }),
+          });
 
-          if (upload) {
-            try {
-              const uploadArgs: Record<string, unknown> = {
-                file: { name: mediaName, mimetype: mediaMime, s3key: upload.key },
-                media_category: mediaType === "video" ? "tweet_video" : "tweet_image",
-              };
+          if (!uploadReq.ok) {
+            console.error("Twitter: Failed to request upload URL", uploadReq.status);
+          } else {
+            const uploadJson = (await uploadReq.json()) as { key?: string; new_presigned_url?: string };
 
-              const uploadResult = await composio.tools.execute(toolSlug, {
-                userId,
-                arguments: uploadArgs,
+            if (!uploadJson.key || !uploadJson.new_presigned_url) {
+              console.error("Twitter: Invalid upload response from Composio");
+            } else {
+              // Step 2: PUT the file to the presigned URL
+              const uploadPut = await fetch(uploadJson.new_presigned_url, {
+                method: "PUT",
+                headers: { "content-type": mediaMime || "application/octet-stream" },
+                body: new Uint8Array(mediaBuffer),
               });
 
-              console.log("Twitter media upload result:", JSON.stringify(uploadResult, null, 2));
-
-              // Extract media_id from deeply nested response
-              const extractMediaId = (obj: unknown): string | null => {
-                if (!obj || typeof obj !== "object") return null;
-                const o = obj as Record<string, unknown>;
-                // Check direct fields
-                if (o.media_id_string) return String(o.media_id_string);
-                if (o.media_id && typeof o.media_id !== "object") return String(o.media_id);
-                // Check nested data/output/response
-                for (const key of ["data", "output", "response", "result", "media"]) {
-                  if (o[key] && typeof o[key] === "object") {
-                    const found = extractMediaId(o[key]);
-                    if (found) return found;
-                  }
+              if (!uploadPut.ok) {
+                console.error("Twitter: Failed to upload media file to presigned URL");
+              } else {
+                // Step 3: Determine media category
+                let mediaCategory: string;
+                if (mediaMime === "image/gif") {
+                  mediaCategory = "tweet_gif";
+                } else if (mediaType === "image") {
+                  mediaCategory = "tweet_image";
+                } else {
+                  mediaCategory = "tweet_video";
                 }
-                return null;
-              };
 
-              tweetMediaId = extractMediaId(uploadResult);
-              if (!tweetMediaId) {
-                console.error("Could not extract media_id from Twitter upload response:", JSON.stringify(uploadResult));
+                // Step 4: Execute TWITTER_UPLOAD_LARGE_MEDIA with the s3key
+                const mediaRes = await composio.tools.execute("TWITTER_UPLOAD_LARGE_MEDIA", {
+                  userId,
+                  arguments: {
+                    media: {
+                      name: mediaName || "media",
+                      mimetype: mediaMime || "application/octet-stream",
+                      s3key: uploadJson.key,
+                    },
+                    media_category: mediaCategory,
+                  },
+                });
+
+                // Step 5: Extract media_id from response
+                const mediaRaw = mediaRes as any;
+                const mediaRoot = mediaRaw?.data ?? mediaRaw?.output ?? mediaRaw;
+                const mediaData = mediaRoot?.data ?? mediaRoot;
+                const mediaId =
+                  mediaData?.media_id_string ??
+                  mediaData?.media_id ??
+                  mediaData?.id ??
+                  mediaData?.data?.media_id_string ??
+                  mediaData?.data?.media_id;
+
+                if (mediaId) {
+                  tweetMediaId = String(mediaId);
+                } else {
+                  console.error("Twitter: Failed to resolve media_id", JSON.stringify(mediaRaw));
+                }
               }
-            } catch (mediaErr: any) {
-              console.error("Twitter media upload tool error:", mediaErr?.message, mediaErr);
             }
-          } else {
-            console.error("Twitter: uploadToComposio returned null");
           }
         }
 
-        const tweetArgs: Record<string, unknown> = { text };
+        // Step 6: Create the tweet with or without media
+        const tweetArgs: Record<string, unknown> = {};
         if (tweetMediaId) {
           tweetArgs.media_media_ids = [tweetMediaId];
         }
+        if (text) {
+          tweetArgs.text = text;
+        }
 
-        console.log("Twitter post args:", JSON.stringify(tweetArgs));
         await composio.tools.execute("TWITTER_CREATION_OF_A_POST", { userId, arguments: tweetArgs });
         results.twitter = { success: true, ...(mediaBuffer && !tweetMediaId ? { error: "Posted text only — media upload failed" } : {}) };
       }
@@ -224,20 +260,30 @@ export async function POST(req: NextRequest) {
         if (!igUserId) { results.instagram = { success: false, error: "Failed to resolve Instagram user ID" }; continue; }
         const igId = String(igUserId).trim();
 
-        // Upload to Composio
-        const upload = await uploadToComposio(mediaBuffer, mediaName, mediaMime, "INSTAGRAM", "INSTAGRAM_CREATE_MEDIA_CONTAINER");
-        if (!upload) { results.instagram = { success: false, error: "Failed to upload media" }; continue; }
-
+        // Upload to Cloudinary (Instagram requires publicly accessible URLs)
         const isVideo = mediaType === "video";
+        let cloudinaryUrl: string;
+        try {
+          const uploadResult = await uploadBufferToCloudinary(mediaBuffer, {
+            folder: "all-in-one-posts",
+            userId,
+            resourceType: isVideo ? "video" : "image",
+          });
+          cloudinaryUrl = uploadResult.url;
+        } catch (error) {
+          results.instagram = { success: false, error: "Failed to upload media to Cloudinary" };
+          continue;
+        }
+
         const containerArgs: Record<string, unknown> = {
           ig_user_id: igId,
           caption: fullCaption || undefined,
           content_type: isVideo ? "reel" : "photo",
         };
         if (isVideo) {
-          containerArgs.video_url = `composio://file/${upload.key}`;
+          containerArgs.video_url = cloudinaryUrl;
         } else {
-          containerArgs.image_url = `composio://file/${upload.key}`;
+          containerArgs.image_url = cloudinaryUrl;
         }
 
         const container = await composio.tools.execute("INSTAGRAM_CREATE_MEDIA_CONTAINER", { userId, arguments: containerArgs });
