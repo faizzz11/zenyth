@@ -93,6 +93,27 @@ export default function AllInOnePostPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Handle URL parameters for autofill
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const promptParam = params.get('prompt');
+    const platformParam = params.get('platform');
+    
+    if (promptParam) {
+      setPrompt(decodeURIComponent(promptParam));
+      setTab('ai');
+    }
+    
+    if (platformParam && platforms.length > 0) {
+      // Select only the specified platform
+      const sel: Record<string, boolean> = {};
+      platforms.forEach((p) => {
+        sel[p.name] = p.name === platformParam && p.connected;
+      });
+      setSelected(sel);
+    }
+  }, [platforms]);
+
   const connectedPlatforms = platforms.filter((p) => p.connected);
   const selectedPlatforms = connectedPlatforms.filter((p) => selected[p.name]);
 

@@ -56,7 +56,7 @@ const quickActions = [
     {
         title: "Content Planner",
         description: "Plan & schedule a full month of content",
-        href: "/dashboard/planner",
+        href: "/planner",
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
