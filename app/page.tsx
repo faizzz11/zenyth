@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import AuthHeader from "@/components/header/auth-header"
 import SmartSimpleBrilliant from "@/components/landing/smart-simple-brilliant"
 import YourWorkInSync from "@/components/landing/your-work-in-sync"
 import EffortlessIntegration from "@/components/landing/effortless-integration-updated"
@@ -85,18 +86,7 @@ export default function LandingPage() {
 
                 {/* Desktop Nav Links */}
                 <div className="hidden sm:flex items-center gap-1">
-                  <Link
-                    href="/sign-in"
-                    className="px-3 py-1.5 text-[13px] font-medium text-[#605A57] hover:text-[#37322F] transition-colors font-sans rounded-full hover:bg-[rgba(55,50,47,0.04)]"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className="px-4 py-1.5 text-[13px] font-medium bg-[oklch(0.6_0.2_45)] text-white rounded-full hover:opacity-90 transition-opacity font-sans"
-                  >
-                    Sign Up
-                  </Link>
+                  <AuthHeader />
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -145,21 +135,8 @@ export default function LandingPage() {
                     Meme Generator
                   </Link>
                   <div className="h-px bg-[rgba(55,50,47,0.08)] my-1" />
-                  <div className="flex gap-2">
-                    <Link
-                      href="/sign-in"
-                      className="flex-1 px-4 py-2.5 text-center text-[14px] font-medium text-[#37322F] border border-[rgba(55,50,47,0.15)] rounded-full hover:bg-[rgba(55,50,47,0.04)] transition-colors font-sans"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/sign-up"
-                      className="flex-1 px-4 py-2.5 text-center text-[14px] font-medium text-white bg-[oklch(0.6_0.2_45)] rounded-full hover:opacity-90 transition-opacity font-sans"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Sign Up
-                    </Link>
+                  <div className="px-4 py-2">
+                    <AuthHeader />
                   </div>
                 </div>
               )}
